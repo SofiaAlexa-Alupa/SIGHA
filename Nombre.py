@@ -1,5 +1,5 @@
 class Nombre:
-    def __init__(self, nombre, apellido):
+    def __init__(self, nombre = "Azul", apellido = "Rosas"):
         self.nombre = nombre
         self.apellido = apellido
 
