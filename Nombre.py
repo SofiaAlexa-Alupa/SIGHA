@@ -18,4 +18,3 @@ class Nombre:
     def __str__(self):
         return (f"Apellido(s): {self.apellido} \n" 
                 f"Nombre: {self.nombre} \n")
-
