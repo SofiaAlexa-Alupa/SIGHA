@@ -1,3 +1,6 @@
+from functools import total_ordering
+
+@total_ordering
 class Hora:
 
     def __init__(self,
@@ -9,6 +12,15 @@ class Hora:
 
     def __str__(self):#metodo que nos regresa un string formateado de la hora en el siguiente formato (H:M:S)
         return f"{self.hora:02d}:{self.minuto:02d}"
+
+    def __eq__(self, otro):
+        return self.criterio_busqueda() == otro.criterio_busqueda()
+
+    def __lt__(self, otro):
+        return self.criterio_busqueda() < otro.criterio_busqueda()
+
+    def criterio_busqueda(self):
+        return (self.hora, self.minuto)
 
     '''
     ##########################################

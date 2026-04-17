@@ -1,13 +1,28 @@
-from datetime import date
+from functools import total_ordering
 
+@total_ordering
 class Fecha:
     def __init__(self, dia = 24, mes = 5, año = 2026):
         self.dia = dia #Dia es un atributo tipo entero
         self.mes = mes #Mes es un atributo entero
         self.año = año #año tambien es un atributo entero
 
-    def __str__(self):
+    def __str__(self):#Metodo to String tipico
         return f"{self.dia}/{self.mes}/{self.año}"
+
+    def __eq__(self, other):#Sobrecarga del operador ==
+        if isinstance(other, Fecha):
+            return False
+
+    def __lt__(self, other):#Sorecarga del operador <
+        if isinstance(other, Fecha):
+            return NotImplemented
+
+        return self.criterios_busquedas() < other.criterios_busquedas()
+
+    def criterios_busquedas(self):#Estos son los criterios que usaremos para evaluar la clase, 
+        return (self.año, self.mes, self.dia)
+
 
     '''
        ##########################################

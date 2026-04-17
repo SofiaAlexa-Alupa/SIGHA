@@ -1,5 +1,6 @@
 from fecha import Fecha
 from hora import Hora
+
 class Seccion:
     def __init__(self,
                  identificacion = "Moderm C7M", #Atributo tipo string para combinar numeros y letras,
@@ -41,12 +42,32 @@ class Seccion:
     def obtener_dias_totales(self):#Utiliza los metodos de las clases fecha, y retorna cuantos dias tiene en total la seccion
         return self.fecha_inicio.calculoDiferenciaDias(self.fecha_fin)
 
-    '''
-    TODO
-    Calculo dias disonibles
-    quitar cupos
-    agregar cupos
-    '''
+    def quitar_cupo(self):#Quita un unico cupo#Quita un UNICO cupo
+        if self.cupos_disponibles - 1 <= 0:#En caso de que no sea suficiente
+            return -1#Regresa este error, el cual esta en la lista de excel
+
+        self.cupos_disponibles -= 1 #En caso de que si se pueda, restara solamente uno
+        return 0 #Retorna 0 en caso de exito
+
+    def quitar_cupos(self, cupos):#Puede quitar mas de un unico cupo
+        if self.cupos_disponibles - cupos < 0:#Comprueba que existan suficientes cupos para poder eliminar
+            return -1#En caso de que los cupos disponibles no sean sucifientes retorna -1
+
+        if cupos <= 0:#Si los cupos que quieres eliminar son negativos (Por ejemplo -3), dara el error -2 (Esta en el exel)
+            return -2
+
+        self.cupos_disponibles -= cupos#Se restan los cupos disponibles si todo es correcto
+        self.cupos_disponibles -= cupos#Se  restan los cupos disponibles si son suficientes
+        return 0
+
+    def agregar_cupos(self, cupos):#metodo para agregar los cupos
+        if cupos <= 0:#Si los cupos son 0 o menor
+            return -2#Da el error -2
+
+        #Si todo bien, entonces se le sumaran los cupos a los cupos disponibles y a los totales
+        self.cupos_disponibles += cupos
+        self.cupos_totales += cupos
+        return 0
 
 
     '''
@@ -61,26 +82,16 @@ class Seccion:
         self.seccion = seccion
 
     def ponerHoraInicio(self, Hora):
-        self.hora_inicio.ponerHora(Hora.obtenerHora())
-        self.hora_fin.ponerMinuto(Hora.obtenerMinuto())
+        self.hora_inicio = Hora
 
     def ponerHoraFin(self, Hora):
-        self.hora_fin.ponerHora(Hora.obtenerHora())
-        self.hora_fin.ponerMinuto(Hora.obtenerMinuto())
+        self.hora_fin = Hora
 
     def ponerFechaInicio(self, Fecha):
-        self.fecha_inicio.ponerAño(Fecha.obtenerAño())
-        self.fecha_inicio.ponerMes(Fecha.obtenerMes())
-        self.fecha_inicio.ponerDia(Fecha.obtenerDia())
+        self.fecha_inicio = Fecha
 
     def ponerFechaFin(self, Fecha):
-        self.fecha_fin.ponerAño(Fecha.obtenerAño())
-        self.fecha_fin.ponerMes(Fecha.obtenerMes())
-        self.fecha_fin.ponerDia(Fecha.obtenerDia())
-
-    def ponerCuposTotales(self, cupos_totales):
-        self.calcularCuposDisponibles(cupos_totales)
-        self.cupos_totales = cupos_totales
+        self.fecha_fin = Fecha
 
 
     '''

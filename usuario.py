@@ -3,7 +3,6 @@ from nombre import Nombre
 import secrets
 import string
 
-#TODO generacion de correo, ¿Nosotros damos de alta el correo, o solamente generamos la direccion
 
 class Usuario:
     def __init__(self,
@@ -11,6 +10,7 @@ class Usuario:
                  estado = "ACTIVO",
                  nombre = Nombre(),
                  correo = "Kuakitikuak@alumnos.udg.mx",
+                 numero_telefono = 22039164,
                  contraseña = "FJH4tfgv:{;",
                  rol = "Creado",
                  fecha_creacion = Fecha() ):
@@ -19,6 +19,7 @@ class Usuario:
         self.estado = estado
         self.nombre = nombre
         self.correo = correo
+        self.numero_telefono = numero_telefono
         self.contraseña = contraseña
         self.rol = rol
         self.fecha_creacion = fecha_creacion
@@ -70,6 +71,9 @@ class Usuario:
     def ponerFecha_Creacion(self, fecha):#Metodo que modifica la fecha de creacion
         self.fecha_creacion = fecha
 
+    def ponerNumeroTelefono(self, telefono):
+        self.numero_telefono = telefono
+
     '''
      #####################################
      #Metodos para devolver los atributos#
@@ -96,3 +100,6 @@ class Usuario:
 
     def obtenerFecha_Creacion(self):#Metodo que devuelve la fecha de creacion de la cuenta del usuario
         return self.fecha_creacion
+
+    def obtenerNumeroTelefono(self):
+        return self.numero_telefono

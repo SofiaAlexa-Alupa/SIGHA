@@ -16,7 +16,7 @@ print(date.validar(29,2,2015))#En caso  de que no sea bicisesto
 print(date.validar(29,2,2100))#Si es biciesto pero divicible entre 100
 print(date.validar(1, 1, 0))#Si el año es menor a 1
  #Casos positivos
-print(date.validar(1, 1, 1))#Si todo es mayor a 1
+print(date.validar(1, 1, 1))#Si todoo es mayor a 1
 print(date.validar(31, 1, 2))#Si el dia esta entre el rango de su mes correspondiente
 print(date.validar(29, 2, 2016))#Si el año es biciesto, febrero tiene 29 dias
 print(date.validar(29, 2, 2000))#Si el añó es divicible entre 100 y 400
@@ -64,10 +64,32 @@ print(nombre)
 nombre = Nombre("Joshua Ramon", "Rivas Rosales")
 print(nombre)
 nombre.ponerNombre("Mesuda")
-nombre.ponerApellido("Hidrosooo")
+nombre.ponerApellidoMaterno("Hidrosooo")
+nombre.ponerApellidoPaterno("Don alcohol")
 print(nombre)
-print(nombre.obtenerApellido())
+print(nombre.obtenerApellidoMaterno())
+print(nombre.obtenerApellidoPaterno())
 print(nombre.obtenerNombre())
 
 seccion = Seccion()
 print(seccion)
+
+seccion.ponerSeccion("D01")
+seccion.ponerIdentificacion("Parangaturimicuaro")
+seccion.ponerHoraInicio(hora)
+seccion.ponerHoraFin(hora)
+print(seccion.obtener_dias_totales())
+print(seccion)
+
+#Cosas que daran error:
+print(seccion.agregar_cupos(-1))
+print(seccion.quitar_cupos(-1))
+#Como tenemos 0 cupos disponibles y totales, al intentar quitar aunque sea 1, dara error al no ser suficiente
+print(seccion.quitar_cupo())
+print(seccion.quitar_cupos(1))
+#Si es suficiente no da error
+
+#Como no da error
+print(seccion.agregar_cupos(1))
+print(seccion)
+print(seccion.quitar_cupos(1))
