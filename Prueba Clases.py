@@ -2,6 +2,7 @@ from fecha import Fecha
 from hora import Hora
 from nombre import Nombre
 from seccion import Seccion
+from maestro import Maestro
 #Prueba metodo init
 date = Fecha(1,12,2024)
 #Prueba metodo str
@@ -93,3 +94,7 @@ print(seccion.quitar_cupos(1))
 print(seccion.agregar_cupos(1))
 print(seccion)
 print(seccion.quitar_cupos(1))
+
+maestro = Maestro()
+print(maestro)
+print(maestro.obtener_departamento())

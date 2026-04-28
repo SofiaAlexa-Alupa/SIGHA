@@ -1,10 +1,15 @@
 import flet as ft
+import flet.controls.material.icons
+from flet.controls import alignment
+
+from maestro import Maestro
+
 
 def login(pagina=ft.Page):
     # Funciones de login
-    async def funcion_continuar(event):
+    def funcion_continuar(event):
         if caja_codigo.value:
-            usuario = caja_codigo.value
+            usuario_codigo = caja_codigo.value
             caja_codigo.error = None
         else:
             caja_codigo.error = "Ingrese una contraseña valida"
@@ -17,8 +22,9 @@ def login(pagina=ft.Page):
 
     # TODO implementar la funcion que aga posible la comunicacion de autentificacion
 
-    pagina.tittle = "Login SIGHA"  # El nombre durante el login sera este
-    usuario = ""
+    pagina.title = "SIGHA - Login"  # El nombre durante el login sera este
+    usuario = None
+    usuario_codigo = ""
     contraseña = ""
 
     caja_codigo = ft.TextField(  # Donde el usuario debera de ingresar el dato codigo
@@ -75,4 +81,37 @@ def login(pagina=ft.Page):
     )
     pagina.add(pagina_login)
 
-    return usuario, contraseña
+    return usuario
+
+
+def interfaz_maestro(pagina: ft.Page, usuario: Maestro):
+    pagina.title = "SIGHA - Maestro"
+    pagina.vertical_alignment = ft.MainAxisAlignment.SPACE_AROUND
+
+    print(usuario)
+
+    parte_superior_hogar = ft.Row(
+        controls = [
+            ft.Text(f"Hola, {usuario.nombre}",
+                    size = 24,
+                    weight = "bold",
+                    color = "white",
+                    ),
+            ft.Icon(ft.Icons.ACCOUNT_CIRCLE,
+                    color = "Red",
+                    size = 50,
+                    align = ft.Alignment(-1, 1) )
+
+        ],
+        expand = True,
+        align = ft.Alignment(-1,-1),
+
+    )
+
+    pagina.add(ft.Container(
+        content = ft.Column(
+            controls=[
+                parte_superior_hogar,
+            ]
+        )
+    ))
