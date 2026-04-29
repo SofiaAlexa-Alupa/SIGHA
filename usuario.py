@@ -13,7 +13,8 @@ class Usuario:
                  numero_telefono = 22039164,
                  contraseña = "FJH4tfgv:{;",
                  rol = "Creado",
-                 fecha_creacion = Fecha() ):
+                 fecha_creacion = Fecha(),
+                 notificaciones = []):
 
         self.identificacion = identificacion
         self.estado = estado
@@ -23,6 +24,7 @@ class Usuario:
         self.contraseña = contraseña
         self.rol = rol
         self.fecha_creacion = fecha_creacion
+        self.notificaciones = notificaciones
 
     def __str__(self):
         return (f"Codigo:  {self.identificacion}\n"
@@ -74,6 +76,9 @@ class Usuario:
     def ponerNumeroTelefono(self, telefono):
         self.numero_telefono = telefono
 
+    def agregarNotificacion(self, notificacion):
+        self.notificaciones.append(notificacion)
+
     '''
      #####################################
      #Metodos para devolver los atributos#
@@ -103,3 +108,12 @@ class Usuario:
 
     def obtenerNumeroTelefono(self):
         return self.numero_telefono
+
+    def quitar_todas_notificacion(self):
+        self.notificaciones.clear()
+
+    def quitar_vistos(self):
+        if self.notificaciones:
+            notificaciones_activas = [notificacion for notificacion in self.notificaciones if not notificacion.]
+            return notificaciones_activas
+
