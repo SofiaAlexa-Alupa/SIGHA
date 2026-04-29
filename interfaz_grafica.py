@@ -85,33 +85,46 @@ def login(pagina=ft.Page):
 
 
 def interfaz_maestro(pagina: ft.Page, usuario: Maestro):
-    pagina.title = "SIGHA - Maestro"
-    pagina.vertical_alignment = ft.MainAxisAlignment.SPACE_AROUND
-
-    print(usuario)
+    pagina.title = "SIGHA - Maestro"#Nombre de la pagina, eneste caso al ser la seccion maestro
+    pagina.vertical_alignment = ft.MainAxisAlignment.START#Desde donde se pondran las cosas de la pagina
+    pagina.padding = 20 #Espaciado de la pagina
 
     parte_superior_hogar = ft.Row(
-        controls = [
-            ft.Text(f"Hola, {usuario.nombre}",
-                    size = 24,
-                    weight = "bold",
-                    color = "white",
+        controls=[
+            # Columna para Texto de Bienvenida y Departamento
+            ft.Column(
+                controls=[
+                    ft.Text(
+                        f"Hola, {usuario.nombre}",
+                        size=24,
+                        weight="bold",
+                        color="white",
                     ),
-            ft.Icon(ft.Icons.ACCOUNT_CIRCLE,
-                    color = "Red",
-                    size = 50,
-                    align = ft.Alignment(-1, 1) )
+                    ft.Text(
+                        f"{usuario.obtener_departamento()}",
+                        color=ft.Colors.GREY,
+                        size=14
+                    ),
+                ],
+                spacing=0,  # Sin espacio entre las lineas de txto
+                tight=True  # La columna solo ocupa el espacio de su contenido
+            ),
 
+            # Espaciador que empuja el icono a la derecha
+            ft.Container(expand=True),
+
+            # Icono a la derecha
+            ft.Icon(
+                ft.Icons.ACCOUNT_CIRCLE,
+                color="red",
+                size=50,
+            )
         ],
-        expand = True,
-        align = ft.Alignment(-1,-1),
-
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
     )
 
-    pagina.add(ft.Container(
-        content = ft.Column(
-            controls=[
-                parte_superior_hogar,
-            ]
-        )
-    ))
+    seccion_alertas_activas = f
+
+    pagina.add(parte_superior_hogar)
+    pagina.update()

@@ -9,7 +9,9 @@ class Materia(Seccion):
                  nombre = "La materia mas hermosa, programacion",#Nombre de la materia
                  creditos = 12,#Los creditos que dara la materia al ser finalizada
                  facultad = "Computacion", #Facultad que depende la materia
-                 promedio = 0#El promedio de la materia que el alumno tiene de la materia, unicamente visible en la informacion del alumno
+                 promedio = 0,#El promedio de la materia que el alumno tiene de la materia, unicamente visible en la informacion del alumno
+                 aula = 0, #Entero, el numero de aula dentro de un edificio
+                 edificio = "A" #String para el nombre del edificio
      ):
 
         super().__init__()
@@ -19,13 +21,17 @@ class Materia(Seccion):
         self.creditos = creditos
         self.facultad = facultad
         self.promedio = promedio
+        self.aula = aula
+        self.edificio = edificio
 
     def __str__(self):#Retorna el stirng con la informacion EXCLUSIVA de la materia, lo que se mostrara en el horario
         return (f"Materia ID: {self.identificacion}\n"
                 f"Codigo: {self.codigo}\n"
                 f"Nombre: {self.nombre}\n"
                 f"Creditos: {self.creditos}\n"
-                f"Facultad: {self.facultad}")
+                f"Facultad: {self.facultad}"
+                f"Aula: {self.aula}\n"
+                f"Edificio: {self.edificio}\n")
 
     def __lt__(self, other):# Operador logico
         return self.criterios_comparacion() < other.criterios_comparacion()
@@ -64,7 +70,11 @@ class Materia(Seccion):
     def poner_promedio(self, promedio):#Metodo que modifica el atributo promedio
         self.promedio = promedio
 
+    def poner_aula(self, aula):
+        self.aula = aula
 
+    def poner_edificio(self, edificio):
+        self.edificio = edificio
 
 
     def obtener_identificacion(self):
@@ -85,6 +95,11 @@ class Materia(Seccion):
     def obtener_promedio(self):
         return self.promedio
 
+    def obtener_aula(self):
+        return self.aula
+
+    def obtener_edificio(self):
+        return self.edificio
 
 
 
