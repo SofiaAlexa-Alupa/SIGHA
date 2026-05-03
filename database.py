@@ -600,69 +600,9 @@ def inicializar_bd():
         print(f"   - {table}")
 
 
-def insertar_datos_prueba():
-    """Inserta datos de ejemplo para pruebas"""
-    session = SessionLocal()
-    try:
-        # Verificar si ya hay datos
-        if session.query(Usuario).count() > 0:
-            print("⚠️ Ya existen datos en la BD. No se insertaron datos de prueba.")
-            return
-        
-        print("\n📝 Insertando datos de prueba...")
-        
-        # Crear materias de ejemplo
-        materias_data = [
-            {"codigo": "MAT101", "nombre": "Cálculo Diferencial", "creditos": 8, "facultad": "Ciencias"},
-            {"codigo": "FIS101", "nombre": "Física General", "creditos": 8, "facultad": "Ciencias"},
-            {"codigo": "PRO101", "nombre": "Programación I", "creditos": 10, "facultad": "Ingeniería"},
-            {"codigo": "ING101", "nombre": "Inglés I", "creditos": 6, "facultad": "Lenguas"},
-        ]
-        
-        for m in materias_data:
-            materia = Materia(**m)
-            session.add(materia)
-        
-        session.commit()
-        print("   - Materias insertadas")
-        
-        # Crear un estudiante de prueba
-        usuario_data = {
-            "identificacion": "20240001",
-            "nombre": "Juan",
-            "apellido_paterno": "Pérez",
-            "apellido_materno": "García",
-            "email": "juan@alumnos.udg.mx",
-            "password": "123456",
-            "rol": "estudiante",
-            "fecha_creacion": date.today()
-        }
-        
-        estudiante = GestionBD.crear_estudiante(usuario_data, {
-            "matricula": "20240001",
-            "carrera": "Ingeniería en Software",
-            "semestre": 3,
-            "creditos_totales": 0,
-            "promedio_general": 0.0
-        })
-        print(f"   - Estudiante creado: {usuario_data['nombre']}")
-        
-        print("\n✅ Datos de prueba insertados correctamente")
-        
-    except Exception as e:
-        print(f"❌ Error insertando datos: {e}")
-        session.rollback()
-    finally:
-        session.close()
-
-
 if __name__ == "__main__":
     inicializar_bd()
-    insertar_datos_prueba()
-
-
-
-  
+ 
 
 
 
