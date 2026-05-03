@@ -128,3 +128,129 @@ def interfaz_maestro(pagina: ft.Page, usuario: Maestro):
 
     pagina.add(parte_superior_hogar)
     pagina.update()
+
+    def interfaz_alumno(pagina: ft.Page, usuario: Alumno):
+    pagina.title = "SIGHA - Alumno"
+    pagina.vertical_alignment = ft.MainAxisAlignment.START
+    pagina.padding = 20
+    pagina.bgcolor = "#0f172a"
+
+    # ── PARTE SUPERIOR ───────────────────
+    parte_superior = ft.Row(
+        controls=[
+            ft.Column(
+                controls=[
+                    ft.Text(
+                        f"Hola, {usuario.nombre}",  
+                        size=24,
+                        weight="bold",
+                        color="white",
+                    ),
+                    ft.Text(
+                        f"{usuario.obtener_carrera()} • {usuario.obtener_semestre()}° semestre",
+                        color=ft.Colors.GREY,
+                        size=14
+                    ),
+                ],
+                spacing=0,
+                tight=True
+            ),
+
+            ft.Container(expand=True),
+
+            ft.Icon(
+                ft.Icons.ACCOUNT_CIRCLE,
+                color="#c084fc",
+                size=50,
+            )
+        ],
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+    )
+
+    # ── TARJETAS  ───────────────────────
+    seccion_datos = ft.Row(
+        controls=[
+            ft.Container(
+                content=ft.Column([
+                    ft.Text("Promedio", size=12, color=ft.Colors.GREY),
+                    ft.Text(
+                        str(usuario.obtener_promedio_general()),
+                        size=22,
+                        weight="bold",
+                        color="#c084fc"
+                    )
+                ]),
+                bgcolor="#1e293b",
+                padding=15,
+                border_radius=15,
+                expand=True
+            ),
+
+            ft.Container(
+                content=ft.Column([
+                    ft.Text("Créditos", size=12, color=ft.Colors.GREY),
+                    ft.Text(
+                        f"{usuario.obtener_creditos_obtenidos()} / 320",
+                        size=16,
+                        weight="bold",
+                        color="white"
+                    )
+                ]),
+                bgcolor="#1e293b",
+                padding=15,
+                border_radius=15,
+                expand=True
+            ),
+        ],
+        spacing=10
+    )
+
+    # ── ACCIONES  ────────
+    seccion_acciones = ft.Column(
+        controls=[
+            ft.ElevatedButton(
+                "Buscar materias",
+                width=float("inf"),
+                height=50,
+                bgcolor="#c084fc",
+                color="white",
+                on_click=lambda _: print("Buscar materias")
+            ),
+
+            ft.ElevatedButton(
+                "Mis alertas",
+                width=float("inf"),
+                height=50,
+                bgcolor="#f472b6",
+                color="black",
+                on_click=lambda _: print("Mis alertas")
+            ),
+
+            ft.ElevatedButton(
+                "Simulador de horario",
+                width=float("inf"),
+                height=50,
+                bgcolor="#0ea5e9",
+                color="white",
+                on_click=lambda _: print("Simulador")
+            ),
+        ],
+        spacing=10
+    )
+
+    # ── ENSAMBLE FINAL ─────────────────────────────────────────────
+    pagina.add(
+        ft.Column(
+            controls=[
+                parte_superior,
+                ft.Divider(color="transparent"),
+                seccion_datos,
+                ft.Divider(color="transparent"),
+                ft.Text("Acciones", color="white", size=16, weight="bold"),
+                seccion_acciones
+            ]
+        )
+    )
+
+    pagina.update()
