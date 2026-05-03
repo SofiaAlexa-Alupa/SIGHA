@@ -24,7 +24,7 @@ def main(pagina: ft.Page):#
         pass
 
     if isinstance(usuario, Alumno):
-        pass
+        interfaz.interfaz_alumno(pagina, usuario)
 
     if isinstance(usuario, Maestro):
         interfaz.interfaz_maestro(pagina, usuario)
