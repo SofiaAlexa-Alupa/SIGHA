@@ -114,6 +114,7 @@ class Usuario:
 
     def quitar_vistos(self):
         if self.notificaciones:
-            notificaciones_activas = [notificacion for notificacion in self.notificaciones if not notificacion.]
-            return notificaciones_activas
+            notificaciones_activas = [notificacion for notificacion in self.notificaciones if not notificacion.visto]
+            self.notificaciones = notificaciones_activas
+
 

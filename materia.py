@@ -1,17 +1,21 @@
+from alumno import Alumno
+from hora import Hora
 from seccion import Seccion
 from functools import total_ordering
 
 @total_ordering
 class Materia(Seccion):
     def __init__(self,
-                 identificacion = "-2589751", #El id de la materia
-                 codigo = "S0FtW4r3", #El codigo de la materia (Por ejemplo si es matematicas, todas las materias que tengan matematicas llevaran el mismo codigo)
-                 nombre = "La materia mas hermosa, programacion",#Nombre de la materia
-                 creditos = 12,#Los creditos que dara la materia al ser finalizada
-                 facultad = "Computacion", #Facultad que depende la materia
-                 promedio = 0,#El promedio de la materia que el alumno tiene de la materia, unicamente visible en la informacion del alumno
-                 aula = 0, #Entero, el numero de aula dentro de un edificio
-                 edificio = "A" #String para el nombre del edificio
+                 identificacion:str = "-2589751", #El id de la materia
+                 codigo:str = "S0FtW4r3", #El codigo de la materia (Por ejemplo si es matematicas, todas las materias que tengan matematicas llevaran el mismo codigo)
+                 nombre:str = "La materia mas hermosa, programacion",#Nombre de la materia
+                 creditos:int = 12,#Los creditos que dara la materia al ser finalizada
+                 facultad:str = "Computacion", #Facultad que depende la materia
+                 promedio:int = 0,#El promedio de la materia que el alumno tiene de la materia, unicamente visible en la informacion del alumno
+                 aula:int = 0, #Entero, el numero de aula dentro de un edificio
+                 edificio:str = "A", #String para el nombre del edificio
+                 dias_clase:list[str] = None,#Una lista de strings, guardara los dias que se imparte la materia
+                 alumnos: list[Alumno] = None, #Una lsita con todos los alumnos que se inscribieron en la materia
      ):
 
         super().__init__()
@@ -23,6 +27,8 @@ class Materia(Seccion):
         self.promedio = promedio
         self.aula = aula
         self.edificio = edificio
+        self.dias_clase = dias_clase if dias_clase is not None else []
+        self.alumnos: list[Alumno] = alumnos if alumnos is not None else []
 
     def __str__(self):#Retorna el stirng con la informacion EXCLUSIVA de la materia, lo que se mostrara en el horario
         return (f"Materia ID: {self.identificacion}\n"
@@ -76,6 +82,23 @@ class Materia(Seccion):
     def poner_edificio(self, edificio):
         self.edificio = edificio
 
+    def agregar_alumno(self, alumno):
+        self.alumnos.append(alumno)
+        self.cupos_disponibles -=1
+
+    def quitar_alumno(self, alumno):
+        if alumno in self.alumnos:
+            self.alumnos.remove(alumno)
+            self.cupos_disponibles += 1
+            return 0
+        return -4#Retorna error al no haber alumno dentro de lalista
+    
+
+    def agregar_dias_clase(self, dia):
+        self.dias_clase.append(dia)
+
+    def limpiar_dias_clase(self):
+        self.dias_clase.clear()
 
     def obtener_identificacion(self):
         return self.identificacion
@@ -100,6 +123,13 @@ class Materia(Seccion):
 
     def obtener_edificio(self):
         return self.edificio
+
+    def obtener_dias_clase(self):
+        return self.dias_clase
+
+    def obtener_alumnos(self):
+        return self.alumnos
+
 
 
 
