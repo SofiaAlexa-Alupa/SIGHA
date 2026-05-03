@@ -4,16 +4,16 @@ from sqlalchemy.orm import relationship, sessionmaker
 from datetime import datetime, time, date
 
 Base = declarative_base()
-engine = create_engine('sqlute:///sigha.db' , echo= True)
+engine = create_engine('sqlute:///sigha.db' , echo=True)
 SessionLocal = sessionmaker (bind = engine)
 
 #Tabla Usuario (Base)
 class Usuario(Base):
   "Tabla base para todos los usuarios del sistema"
-  _tablename_ = 'usuarios'
+  __tablename__ = 'usuarios'
 
   id = Column(Integer, primary_key=True, autoincrement=True)
-    identificacion = Column(String(20), unique=True, nullable=False)
+    identificacion = Column(String(20), unique=True, nullable=False) 
     nombre = Column(String(100), nullable=False)
     apellido_paterno = Column(String(50), nullable=False)
     apellido_materno = Column(String(50), nullable=False)
@@ -249,7 +249,7 @@ print("\n Tablas creadas:")
 for table in Base.metadata.tables.keys():
   print(f"    - {Table}")
 
-if _name_ == "_main_":
+if __name__ == "__main__":
   inicializar_bd()
 
 
