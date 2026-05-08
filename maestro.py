@@ -52,3 +52,6 @@ class Maestro(Usuario):
 
     def obtener_disponibilidad(self):
         return self.disponibilidad
+
+    def obtener_notifiaciones(self):
+        return self.notificaciones

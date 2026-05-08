@@ -1,7 +1,6 @@
 #Librerias utilizadas
 import flet as ft
 
-import interfaz_grafica
 #interfaz codficada
 import interfaz_grafica as interfaz
 
@@ -19,6 +18,7 @@ def main(pagina: ft.Page):#
 
     #usuario = interfaz.login(pagina)
     usuario = Maestro()
+    #usuario = Alumno()
 
     if isinstance(usuario, Administrador):
         pass
@@ -34,6 +34,6 @@ def main(pagina: ft.Page):#
 
 
 
-ft.app(main)
+ft.run(main)
 
 
