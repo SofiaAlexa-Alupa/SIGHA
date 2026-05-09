@@ -1,13 +1,7 @@
 import flet as ft
 from datetime import datetime
 
-from flet import MainAxisAlignment, CrossAxisAlignment
-from flet.controls import alignment
-from flet.controls.border_radius import vertical
-from flet.controls.core.canvas import Color
-from jeepney.low_level import padding
-from pygments.styles.paraiso_dark import GREEN
-from wcwidth import width
+
 
 import usuario
 from alertas import Alerta
@@ -148,7 +142,7 @@ def interfaz_maestro(pagina: ft.Page, usuario: Maestro):
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
         ),
         bgcolor=CARD,
-        padding=ft.padding.only(left=20, right=20, top=40, bottom=12),
+        padding=ft.Padding.only(left=20, right=20, top=40, bottom=12),
     )
 
 
@@ -169,7 +163,7 @@ def interfaz_maestro(pagina: ft.Page, usuario: Maestro):
                 scroll=ft.ScrollMode.AUTO,  # ← Scroll si el contenido es largo
                 spacing=10,
             ),
-            padding=ft.padding.symmetric(horizontal=16, vertical=10),
+            padding=ft.Padding.symmetric(horizontal=16, vertical=10),
             expand=True,
         ))
         pagina.update()
@@ -184,7 +178,7 @@ def interfaz_maestro(pagina: ft.Page, usuario: Maestro):
         elif indice == 2:
             notificaciones_maestro(pagina, usuario)
         elif indice == 3:
-            pass
+            perfil_maestro(pagina, usuario)
 
     barra_inferior = ft.NavigationBar(
         bgcolor=CARD,
@@ -275,7 +269,7 @@ def mostrar_informacion_materia_vista_profesor(pagina: ft.Page, materia: Materia
                                 ),
                                 bgcolor=CARD,
                                 border_radius=8,
-                                padding=ft.padding.symmetric(horizontal=12, vertical=8),
+                                padding=ft.Padding.symmetric(horizontal=12, vertical=8),
                             )
                             for i, alumno in enumerate(alumnos, start=1)  # ← enumerate correcto
                         ],
@@ -287,7 +281,7 @@ def mostrar_informacion_materia_vista_profesor(pagina: ft.Page, materia: Materia
             ),
             bgcolor=BG,
             border_radius=12,
-            padding=ft.padding.all(12),
+            padding=ft.Padding.all(12),
         )
 
     # Header
@@ -313,7 +307,7 @@ def mostrar_informacion_materia_vista_profesor(pagina: ft.Page, materia: Materia
             ]
         ),
         bgcolor=CARD,
-        padding=ft.padding.only(top=40, bottom=12),
+        padding=ft.Padding.only(top=40, bottom=12),
     )
 
     # Días de clase unidos en un string
@@ -353,16 +347,16 @@ def mostrar_informacion_materia_vista_profesor(pagina: ft.Page, materia: Materia
                         spacing=8,
                     ),
                     bgcolor=CARD,
-                    border=ft.border.all(2, ft.Colors.GREY_500),  # ← minúsculas
+                    border=ft.Border.all(2, ft.Colors.GREY_500),  # ← minúsculas
                     border_radius=12,
-                    padding=ft.padding.all(16),
+                    padding=ft.Padding.all(16),
                     alignment=ft.Alignment.CENTER,# ← minúsculas
                 ),
             ],
             spacing=12,
             scroll=ft.ScrollMode.AUTO,
         ),
-        padding=ft.padding.all(16),
+        padding=ft.Padding.all(16),
         alignment=ft.Alignment.CENTER,
         expand=True,
     )
@@ -450,9 +444,9 @@ def seccion_1_materias_registradas(pagina:ft.Page, usuario: Maestro):
                 ],
                 spacing = 50
             ),
-            border=ft.border.all(1, GREY),
+            border=ft.Border.all(1, GREY),
             border_radius=10,
-            padding=ft.padding.symmetric(horizontal=12, vertical=8),
+            padding=ft.Padding.symmetric(horizontal=12, vertical=8),
             bgcolor= CARD,
             alignment=ft.Alignment.CENTER,
         )
@@ -477,11 +471,11 @@ def seccion_1_materias_registradas(pagina:ft.Page, usuario: Maestro):
                                 height=60,
                                 style=ft.ButtonStyle(
                                     bgcolor=CARD,
-                                    side = ft.BorderSide(width=2, color = GREEN)
+                                    side = ft.BorderSide(width=2, color =ft.Colors.GREEN)
                                 ),
                             ),
                             ft.Icon(ft.Icons.ACCESS_TIME,
-                                    color = GREEN,
+                                    color = ft.Colors.GREEN,
                                     size = 50)
                         ]
                     )
@@ -701,7 +695,8 @@ def notificaciones_maestro(pagina: ft.Page, usuario:Maestro):
                 header_actual,
                 pagina_notificacion_completa
             ],
-            padding = 12
+            padding = 12,
+            bgcolor = BG
         )
 
 
@@ -745,22 +740,23 @@ def notificaciones_maestro(pagina: ft.Page, usuario:Maestro):
             ),
 
             bgcolor=CARD,
-            padding=ft.padding.only(top=40, bottom=12),
+            padding=ft.Padding.only(top=40, bottom=12),
         )
 
+    cuerpo = ft.Container(
+        content = ft.Column(
+            [
+                
+            ]
+        )
+    )
 
 
 
 
     header = crear_header()
 
-    #notificaciones = usuario.obtener_notifiaciones()
-    notificaciones = []
-    notificaciones.append(Alerta(mensaje = "puta"))
-    notificaciones.append(Alerta(mensaje="Wan"))
-    notificaciones.append(Alerta(mensaje="pa"))
-    notificaciones.append(Alerta(mensaje="ta"))
-    notificaciones.append(Alerta(mensaje="wanpata"))
+    notificaciones = usuario.obtener_notifiaciones()
     cuerpo = None
 
     if not notificaciones:
@@ -785,7 +781,7 @@ def notificaciones_maestro(pagina: ft.Page, usuario:Maestro):
             ),
             alignment = ft.Alignment.CENTER,
             bgcolor = CARD,
-            border = ft.border.all(2, BORDER)
+            border = ft.Border.all(2, BORDER)
 
         )
 
@@ -813,7 +809,7 @@ def notificaciones_maestro(pagina: ft.Page, usuario:Maestro):
                             alignment = ft.Alignment.CENTER_LEFT,
                         ),
                         bgcolor=CARD,
-                        border=ft.border.all(2, BORDER),
+                        border=ft.Border.all(2, BORDER),
 
                     )for notificacion in notificaciones
 
@@ -843,6 +839,57 @@ def notificaciones_maestro(pagina: ft.Page, usuario:Maestro):
 
     pagina.views.append(build)
     pagina.update()
+
+def perfil_maestro(pagina:ft.Page, usuario:Maestro):
+    def crear_header():
+        return ft.Container(
+            content=ft.Row(
+                [
+                    # Botón de regreso
+                    ft.IconButton(
+                        icon=ft.Icons.ARROW_BACK_OUTLINED,  # ← icon=
+                        icon_color=ft.Colors.GREY_500,
+                        icon_size=40,
+                        on_click=lambda event: (pagina.views.pop(), pagina.update()),
+                    ),
+
+                    # Texto centrado
+                    ft.Container(
+                        content=ft.Text(  # ← content=
+                            "Perfil",
+                            color=TEXT,
+                            size=30,
+                            italic=True,
+                            weight="bold",
+                        ),
+                        expand=True,
+                        alignment=ft.Alignment.CENTER,
+                    ),
+
+                    # Contenedor vacío para equilibrar el Row
+                    ft.Container(width=48),
+                ],
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            ),
+
+            bgcolor=CARD,
+            padding=ft.Padding.only(top=40, bottom=12),
+        )
+
+    header = crear_header()
+
+
+    build = ft.View(
+        [
+            header,
+        ],
+        padding = 20,
+        bgcolor = BG,
+
+    )
+
+    pagina.views.append(build)
+
 
 
 def interfaz_alumno(pagina: ft.Page, usuario: Alumno):
