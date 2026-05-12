@@ -892,128 +892,713 @@ def perfil_maestro(pagina:ft.Page, usuario:Maestro):
 
 
 
-def interfaz_alumno(pagina: ft.Page, usuario: Alumno):
+def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]):
+
+    # ── CONFIGURACION GENERAL ─────────────────────────────
     pagina.title = "SIGHA - Alumno"
-    pagina.vertical_alignment = ft.MainAxisAlignment.START
-    pagina.padding = 20
     pagina.bgcolor = "#0f172a"
+    pagina.padding = 15
+    pagina.scroll = ft.ScrollMode.AUTO
+    pagina.vertical_alignment = ft.MainAxisAlignment.START
 
-    # ── PARTE SUPERIOR ───────────────────
-    parte_superior = ft.Row(
-        controls=[
-            ft.Column(
-                controls=[
-                    ft.Text(
-                        f"Hola, {usuario.nombre}",  
-                        size=24,
-                        weight="bold",
-                        color="white",
-                    ),
-                    ft.Text(
-                        f"{usuario.obtener_carrera()} • {usuario.obtener_semestre()}° semestre",
-                        color=ft.Colors.GREY,
-                        size=14
-                    ),
-                ],
-                spacing=0,
-                tight=True
-            ),
+    pagina.clean()
 
-            ft.Container(expand=True),
+    # ── COLORES ───────────────────────────────────────────
+    COLOR_FONDO = "#0f172a"
+    COLOR_CARD = "#1e293b"
+    COLOR_PRIMARIO = "#c084fc"
+    COLOR_SECUNDARIO = "#f472b6"
+    COLOR_TEXTO = "white"
+    COLOR_GRIS = "#94a3b8"
 
-            ft.Icon(
-                ft.Icons.ACCOUNT_CIRCLE,
-                color="#c084fc",
-                size=50,
-            )
-        ],
-        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        vertical_alignment=ft.CrossAxisAlignment.CENTER,
-    )
+    # ── ALERTAS ───────────────────────────────────────────
+    if not hasattr(usuario, "notificaciones"):
+        usuario.notificaciones = []
 
-    # ── TARJETAS  ───────────────────────
-    seccion_datos = ft.Row(
-        controls=[
-            ft.Container(
-                content=ft.Column([
-                    ft.Text("Promedio", size=12, color=ft.Colors.GREY),
-                    ft.Text(
-                        str(usuario.obtener_promedio_general()),
-                        size=22,
-                        weight="bold",
-                        color="#c084fc"
-                    )
-                ]),
-                bgcolor="#1e293b",
-                padding=15,
-                border_radius=15,
-                expand=True
-            ),
+    # ── FUNCION PARA CAMBIAR PANTALLA ─────────────────────
+    def cambiar_pantalla(vista):
+        pagina.clean()
+        vista()
+        pagina.update()
 
-            ft.Container(
-                content=ft.Column([
-                    ft.Text("Créditos", size=12, color=ft.Colors.GREY),
-                    ft.Text(
-                        f"{usuario.obtener_creditos_obtenidos()} / 320",
-                        size=16,
-                        weight="bold",
-                        color="white"
-                    )
-                ]),
-                bgcolor="#1e293b",
-                padding=15,
-                border_radius=15,
-                expand=True
-            ),
-        ],
-        spacing=10
-    )
+    # ── FUNCIONES ALERTAS ─────────────────────────────────
+    def agregar_alerta(materia):
 
-    # ── ACCIONES  ────────
-    seccion_acciones = ft.Column(
-        controls=[
-            ft.ElevatedButton(
-                "Buscar materias",
-                width=float("inf"),
-                height=50,
-                bgcolor="#c084fc",
-                color="white",
-                on_click=lambda _: print("Buscar materias")
-            ),
+        if materia not in usuario.notificaciones:
+            usuario.notificaciones.append(materia)
 
-            ft.ElevatedButton(
-                "Mis alertas",
-                width=float("inf"),
-                height=50,
-                bgcolor="#f472b6",
-                color="black",
-                on_click=lambda _: print("Mis alertas")
-            ),
+        cambiar_pantalla(mostrar_alertas)
 
-            ft.ElevatedButton(
-                "Simulador de horario",
-                width=float("inf"),
-                height=50,
-                bgcolor="#0ea5e9",
-                color="white",
-                on_click=lambda _: print("Simulador")
-            ),
-        ],
-        spacing=10
-    )
+    def eliminar_alerta(materia):
 
-    # ── ENSAMBLE FINAL ─────────────────────────────────────────────
-    pagina.add(
-        ft.Column(
+        if materia in usuario.notificaciones:
+            usuario.notificaciones.remove(materia)
+
+        cambiar_pantalla(mostrar_alertas)
+
+    # ── PERFIL ────────────────────────────────────────────
+    def mostrar_perfil():
+
+        pagina.clean()
+
+        parte_superior_perfil = ft.Row(
             controls=[
-                parte_superior,
-                ft.Divider(color="transparent"),
-                seccion_datos,
-                ft.Divider(color="transparent"),
-                ft.Text("Acciones", color="white", size=16, weight="bold"),
-                seccion_acciones
+
+                ft.IconButton(
+                    icon=ft.Icons.ARROW_BACK,
+                    icon_color="white",
+                    on_click=lambda _: cambiar_pantalla(mostrar_home)
+                ),
+
+                ft.Container(expand=True),
+
+                ft.Text(
+                    "Mi Perfil",
+                    size=22,
+                    weight="bold",
+                    color="white"
+                ),
+
+                ft.Container(expand=True),
             ]
         )
-    )
 
-    pagina.update()
+        informacion_usuario = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=20,
+
+            content=ft.Column(
+                controls=[
+
+                    ft.Icon(
+                        ft.Icons.ACCOUNT_CIRCLE,
+                        size=100,
+                        color=COLOR_PRIMARIO
+                    ),
+
+                    ft.Text(
+                        usuario.nombre.obtenerNombre(),
+                        size=26,
+                        weight="bold",
+                        color="white"
+                    ),
+
+                    ft.Text(
+                        usuario.obtener_carrera(),
+                        size=16,
+                        color=COLOR_GRIS
+                    ),
+
+                    ft.Divider(color="transparent"),
+
+                    ft.Text(
+                        f"Matrícula: {usuario.obtener_matricula()}",
+                        color="white",
+                        size=16
+                    ),
+
+                    ft.Text(
+                        f"Semestre: {usuario.obtener_semestre()}",
+                        color="white",
+                        size=16
+                    ),
+
+                    ft.Text(
+                        f"Promedio General: {usuario.obtener_promedio_general()}",
+                        color="white",
+                        size=16
+                    ),
+
+                    ft.Text(
+                        f"Créditos Obtenidos: {usuario.obtener_creditos_obtenidos()}",
+                        color="white",
+                        size=16
+                    ),
+                ],
+
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            )
+        )
+
+        pagina.add(
+            ft.Column(
+                controls=[
+                    parte_superior_perfil,
+                    ft.Container(height=20),
+                    informacion_usuario
+                ]
+            )
+        )
+
+    # ── HOME ──────────────────────────────────────────────
+    def mostrar_home():
+
+        parte_superior = ft.Row(
+            controls=[
+
+                ft.Column(
+                    controls=[
+
+                        ft.Text(
+                            f"Hola, {usuario.nombre.obtenerNombre()}",
+                            size=24,
+                            weight="bold",
+                            color=COLOR_TEXTO,
+                        ),
+
+                        ft.Text(
+                            f"{usuario.obtener_carrera()} • {usuario.obtener_semestre()}° semestre",
+                            size=14,
+                            color=COLOR_GRIS
+                        ),
+                    ],
+
+                    spacing=2,
+                    tight=True
+                ),
+
+                ft.Container(expand=True),
+
+                ft.IconButton(
+                    icon=ft.Icons.ACCOUNT_CIRCLE,
+                    icon_color=COLOR_PRIMARIO,
+                    icon_size=50,
+                    on_click=lambda _: cambiar_pantalla(mostrar_perfil)
+                )
+            ],
+
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER
+        )
+
+        # ── BUSCADOR ───────────────────────
+        buscador = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=15,
+
+            on_click=lambda _: cambiar_pantalla(mostrar_busqueda),
+
+            content=ft.Row(
+                controls=[
+                    ft.Icon(ft.Icons.SEARCH, color=COLOR_GRIS),
+
+                    ft.Text(
+                        "Buscar materia...",
+                        color=COLOR_GRIS,
+                        size=16
+                    )
+                ]
+            )
+        )
+
+        # ── ALERTAS ───────────────────────
+        alertas_texto = (
+            f"{len(usuario.notificaciones)} alertas activas"
+            if usuario.notificaciones
+            else "No tienes alertas activas"
+        )
+
+        seccion_alertas = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=15,
+
+            on_click=lambda _: cambiar_pantalla(mostrar_alertas),
+
+            content=ft.Column(
+                controls=[
+
+                    ft.Text(
+                        "Mis Alertas",
+                        color=COLOR_PRIMARIO,
+                        weight="bold",
+                        size=16
+                    ),
+
+                    ft.Text(
+                        alertas_texto,
+                        color=COLOR_GRIS
+                    )
+                ]
+            )
+        )
+
+        # ── SIMULADOR ─────────────────────
+        tarjeta_simulador = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=20,
+
+            content=ft.Row(
+                controls=[
+
+                    ft.Icon(
+                        ft.Icons.CALENDAR_MONTH,
+                        color=COLOR_PRIMARIO,
+                        size=40
+                    ),
+
+                    ft.Container(width=20),
+
+                    ft.Column(
+                        controls=[
+
+                            ft.Text(
+                                "Ver posibles traslapes",
+                                color=COLOR_TEXTO,
+                                size=14
+                            ),
+
+                            ft.ElevatedButton(
+                                "Ir al simulador",
+                                bgcolor=COLOR_PRIMARIO,
+                                color="white",
+                                on_click=lambda _: cambiar_pantalla(
+                                    mostrar_simulador
+                                )
+                            )
+                        ],
+
+                        spacing=10
+                    )
+                ]
+            )
+        )
+
+        # ── MATERIAS POPULARES ────────────
+        materias_populares = ft.Column(
+            controls=[
+
+                ft.Text(
+                    "Materias más solicitadas",
+                    color=COLOR_PRIMARIO,
+                    weight="bold",
+                    size=16
+                ),
+
+                ft.Row(
+                    controls=[
+
+                        ft.ElevatedButton(
+                            "Programación",
+                            bgcolor=COLOR_CARD,
+                            color="white"
+                        ),
+
+                        ft.ElevatedButton(
+                            "Cálculo",
+                            bgcolor=COLOR_CARD,
+                            color="white"
+                        ),
+
+                        ft.ElevatedButton(
+                            "Bases de Datos",
+                            bgcolor=COLOR_CARD,
+                            color="white"
+                        ),
+                    ],
+
+                    scroll=ft.ScrollMode.AUTO
+                )
+            ]
+        )
+
+        # ── NAVBAR ────────────────────────
+        navbar = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=10,
+
+            content=ft.Row(
+                controls=[
+
+                    ft.IconButton(
+                        icon=ft.Icons.HOME,
+                        icon_color=COLOR_PRIMARIO,
+                        on_click=lambda _: cambiar_pantalla(mostrar_home)
+                    ),
+
+                    ft.IconButton(
+                        icon=ft.Icons.SEARCH,
+                        icon_color="white",
+                        on_click=lambda _: cambiar_pantalla(mostrar_busqueda)
+                    ),
+
+                    ft.IconButton(
+                        icon=ft.Icons.NOTIFICATIONS,
+                        icon_color="white",
+                        on_click=lambda _: cambiar_pantalla(mostrar_alertas)
+                    ),
+
+                    ft.IconButton(
+                        icon=ft.Icons.PERSON,
+                        icon_color="white",
+                        on_click=lambda _: cambiar_pantalla(mostrar_perfil)
+                    ),
+                ],
+
+                alignment=ft.MainAxisAlignment.SPACE_AROUND
+            )
+        )
+
+        pagina.add(
+            ft.Column(
+                controls=[
+                    parte_superior,
+                    ft.Container(height=20),
+                    buscador,
+                    ft.Container(height=20),
+                    seccion_alertas,
+                    ft.Container(height=20),
+
+                    ft.Text(
+                        "Simulador de Horario",
+                        color=COLOR_PRIMARIO,
+                        weight="bold",
+                        size=16
+                    ),
+
+                    tarjeta_simulador,
+                    ft.Container(height=20),
+                    materias_populares,
+                    ft.Container(height=20),
+                    navbar
+                ]
+            )
+        )
+
+    # ── BUSQUEDA ──────────────────────────────────────────
+    def mostrar_busqueda():
+
+        lista_resultados = ft.Column()
+
+        def buscar(e):
+
+            texto = campo_busqueda.value.lower()
+            lista_resultados.controls.clear()
+
+            resultados = [
+                materia for materia in db_materias
+                if texto in materia.obtener_nombre().lower()
+            ]
+
+            for materia in resultados:
+
+                tarjeta = ft.Container(
+                    bgcolor=COLOR_CARD,
+                    border_radius=15,
+                    padding=15,
+
+                    content=ft.Column(
+                        controls=[
+
+                            ft.Text(
+                                materia.obtener_nombre(),
+                                size=18,
+                                weight="bold",
+                                color="white"
+                            ),
+
+                            ft.Text(
+                                f"Código: {materia.obtener_codigo()}",
+                                color=COLOR_GRIS
+                            ),
+
+                            ft.Text(
+                                f"Créditos: {materia.obtener_creditos()}",
+                                color=COLOR_GRIS
+                            ),
+
+                            ft.Text(
+                                f"Edificio {materia.obtener_edificio()} - Aula {materia.obtener_aula()}",
+                                color=COLOR_GRIS
+                            ),
+
+                            ft.ElevatedButton(
+                                "Agregar alerta",
+                                bgcolor=COLOR_SECUNDARIO,
+                                color="black",
+
+                                on_click=lambda _, m=materia:
+                                agregar_alerta(m)
+                            )
+                        ]
+                    )
+                )
+
+                lista_resultados.controls.append(tarjeta)
+
+            pagina.update()
+
+        campo_busqueda = ft.TextField(
+            label="Buscar materia",
+            border_color=COLOR_PRIMARIO,
+            color="white",
+            on_change=buscar
+        )
+
+        pagina.add(
+            ft.Column(
+                controls=[
+
+                    ft.Row(
+                        controls=[
+
+                            ft.IconButton(
+                                icon=ft.Icons.ARROW_BACK,
+                                icon_color="white",
+                                on_click=lambda _: cambiar_pantalla(
+                                    mostrar_home
+                                )
+                            ),
+
+                            ft.Text(
+                                "Buscar Materias",
+                                color="white",
+                                size=22,
+                                weight="bold"
+                            )
+                        ]
+                    ),
+
+                    campo_busqueda,
+                    lista_resultados
+                ]
+            )
+        )
+
+    # ── ALERTAS ───────────────────────────────────────────
+    def mostrar_alertas():
+
+        lista_alertas = ft.Column()
+
+        if usuario.notificaciones:
+
+            for materia in usuario.notificaciones:
+
+                tarjeta = ft.Container(
+                    bgcolor=COLOR_CARD,
+                    border_radius=15,
+                    padding=15,
+
+                    content=ft.Column(
+                        controls=[
+
+                            ft.Text(
+                                materia.obtener_nombre(),
+                                size=18,
+                                weight="bold",
+                                color="white"
+                            ),
+
+                            ft.Text(
+                                materia.obtener_codigo(),
+                                color=COLOR_GRIS
+                            ),
+
+                            ft.ElevatedButton(
+                                "Eliminar alerta",
+                                bgcolor="red",
+                                color="white",
+
+                                on_click=lambda _, m=materia:
+                                eliminar_alerta(m)
+                            )
+                        ]
+                    )
+                )
+
+                lista_alertas.controls.append(tarjeta)
+
+        else:
+
+            lista_alertas.controls.append(
+                ft.Text(
+                    "No tienes alertas activas",
+                    color=COLOR_GRIS
+                )
+            )
+
+        pagina.add(
+            ft.Column(
+                controls=[
+
+                    ft.Row(
+                        controls=[
+
+                            ft.IconButton(
+                                icon=ft.Icons.ARROW_BACK,
+                                icon_color="white",
+                                on_click=lambda _: cambiar_pantalla(
+                                    mostrar_home
+                                )
+                            ),
+
+                            ft.Text(
+                                "Mis Alertas",
+                                color="white",
+                                size=22,
+                                weight="bold"
+                            )
+                        ]
+                    ),
+
+                    lista_alertas
+                ]
+            )
+        )
+
+    # ── SIMULADOR ─────────────────────────────────────────
+    def mostrar_simulador():
+
+        dias = [
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes"
+        ]
+
+        horas = [
+            7, 8, 9, 10, 11, 12,
+            13, 14, 15, 16, 17, 18
+        ]
+
+        colores_materias = [
+            "#c084fc",
+            "#f472b6",
+            "#0ea5e9",
+            "#22c55e",
+            "#f59e0b",
+            "#ef4444"
+        ]
+
+        def crear_celda(texto="", color=COLOR_CARD):
+
+            return ft.Container(
+                content=ft.Text(
+                    texto,
+                    color="white",
+                    size=10,
+                    text_align=ft.TextAlign.CENTER,
+                    weight="bold"
+                ),
+
+                width=95,
+                height=60,
+
+                alignment=ft.Alignment(0, 0),
+                bgcolor=color,
+
+                border_radius=10,
+
+                border=ft.border.all(1, "#334155")
+            )
+        tabla = []
+
+        encabezado = ft.Row(
+            controls=[
+                crear_celda("Hora", COLOR_PRIMARIO)
+            ] +
+            [
+                crear_celda(dia, COLOR_PRIMARIO)
+                for dia in dias
+            ]
+        )
+
+        tabla.append(encabezado)
+
+        for hora in horas:
+
+            fila = [
+                crear_celda(f"{hora}:00", "#334155")
+            ]
+
+            for dia in dias:
+
+                texto = ""
+                color = COLOR_CARD
+
+                for indice, materia in enumerate(
+                    usuario.obtener_materias_actuales()
+                ):
+
+                    dias_materia = materia.obtener_dias_clase()
+
+                    hora_inicio = materia.obtenerHoraInicio().hora
+                    hora_fin = materia.obtenerHoraFin().hora
+
+                    if (
+                        dia in dias_materia
+                        and hora >= hora_inicio
+                        and hora < hora_fin
+                    ):
+
+                        texto = materia.obtener_nombre()
+                        color = colores_materias[
+                            indice % len(colores_materias)
+                        ]
+
+                fila.append(
+                    crear_celda(texto, color)
+                )
+
+            tabla.append(ft.Row(controls=fila))
+
+        pagina.add(
+            ft.Column(
+                controls=[
+
+                    ft.Row(
+                        controls=[
+
+                            ft.IconButton(
+                                icon=ft.Icons.ARROW_BACK,
+                                icon_color="white",
+                                on_click=lambda _: cambiar_pantalla(
+                                    mostrar_home
+                                )
+                            ),
+
+                            ft.Text(
+                                "Simulador de Horario",
+                                color="white",
+                                size=22,
+                                weight="bold"
+                            )
+                        ]
+                    ),
+
+                   ft.Column(
+    controls=tabla,
+    scroll=ft.ScrollMode.AUTO
+),
+
+ft.Container(height=15),
+
+ft.Row(
+    controls=[
+        ft.Text(
+            "⚠",
+            color="red",
+            size=20,
+            weight="bold"
+        ),
+
+        ft.Text(
+            "Indica conflicto entre 2 materias en el mismo horario",
+            color="white",
+            size=14
+        )
+    ],
+    spacing=10
+                    )
+
+                ]
+            )
+        )
+
+    # ── INICIO ────────────────────────────────────────────
+    mostrar_home()
