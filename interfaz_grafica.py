@@ -892,9 +892,9 @@ def perfil_maestro(pagina:ft.Page, usuario:Maestro):
 
 
 
-def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]):
+def interfaz_alumno(pagina: ft.Page,usuario: Alumno,db_materias: list[Materia]):
 
-    # ── CONFIGURACION GENERAL ─────────────────────────────
+    #  CONFIGURACION 
     pagina.title = "SIGHA - Alumno"
     pagina.bgcolor = "#0f172a"
     pagina.padding = 15
@@ -903,7 +903,7 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
 
     pagina.clean()
 
-    # ── COLORES ───────────────────────────────────────────
+    #  COLORES 
     COLOR_FONDO = "#0f172a"
     COLOR_CARD = "#1e293b"
     COLOR_PRIMARIO = "#c084fc"
@@ -911,17 +911,17 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
     COLOR_TEXTO = "white"
     COLOR_GRIS = "#94a3b8"
 
-    # ── ALERTAS ───────────────────────────────────────────
+    #  ALERTAS 
     if not hasattr(usuario, "notificaciones"):
         usuario.notificaciones = []
 
-    # ── FUNCION PARA CAMBIAR PANTALLA ─────────────────────
+    #  CAMBIO PANTALLA 
     def cambiar_pantalla(vista):
         pagina.clean()
         vista()
         pagina.update()
 
-    # ── FUNCIONES ALERTAS ─────────────────────────────────
+    #  FUNCIONES ALERTAS 
     def agregar_alerta(materia):
 
         if materia not in usuario.notificaciones:
@@ -936,32 +936,10 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
 
         cambiar_pantalla(mostrar_alertas)
 
-    # ── PERFIL ────────────────────────────────────────────
+    #  PERFIL 
     def mostrar_perfil():
 
         pagina.clean()
-
-        parte_superior_perfil = ft.Row(
-            controls=[
-
-                ft.IconButton(
-                    icon=ft.Icons.ARROW_BACK,
-                    icon_color="white",
-                    on_click=lambda _: cambiar_pantalla(mostrar_home)
-                ),
-
-                ft.Container(expand=True),
-
-                ft.Text(
-                    "Mi Perfil",
-                    size=22,
-                    weight="bold",
-                    color="white"
-                ),
-
-                ft.Container(expand=True),
-            ]
-        )
 
         informacion_usuario = ft.Container(
             bgcolor=COLOR_CARD,
@@ -994,26 +972,22 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
 
                     ft.Text(
                         f"Matrícula: {usuario.obtener_matricula()}",
-                        color="white",
-                        size=16
+                        color="white"
                     ),
 
                     ft.Text(
                         f"Semestre: {usuario.obtener_semestre()}",
-                        color="white",
-                        size=16
+                        color="white"
                     ),
 
                     ft.Text(
                         f"Promedio General: {usuario.obtener_promedio_general()}",
-                        color="white",
-                        size=16
+                        color="white"
                     ),
 
                     ft.Text(
                         f"Créditos Obtenidos: {usuario.obtener_creditos_obtenidos()}",
-                        color="white",
-                        size=16
+                        color="white"
                     ),
                 ],
 
@@ -1024,14 +998,35 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
         pagina.add(
             ft.Column(
                 controls=[
-                    parte_superior_perfil,
+
+                    ft.Row(
+                        controls=[
+
+                            ft.IconButton(
+                                icon=ft.Icons.ARROW_BACK,
+                                icon_color="white",
+                                on_click=lambda _: cambiar_pantalla(
+                                    mostrar_home
+                                )
+                            ),
+
+                            ft.Text(
+                                "Mi Perfil",
+                                size=22,
+                                weight="bold",
+                                color="white"
+                            )
+                        ]
+                    ),
+
                     ft.Container(height=20),
+
                     informacion_usuario
                 ]
             )
         )
 
-    # ── HOME ──────────────────────────────────────────────
+    #  HOME 
     def mostrar_home():
 
         parte_superior = ft.Row(
@@ -1044,18 +1039,17 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                             f"Hola, {usuario.nombre.obtenerNombre()}",
                             size=24,
                             weight="bold",
-                            color=COLOR_TEXTO,
+                            color=COLOR_TEXTO
                         ),
 
                         ft.Text(
-                            f"{usuario.obtener_carrera()} • {usuario.obtener_semestre()}° semestre",
+                            f"{usuario.obtener_carrera()} • "
+                            f"{usuario.obtener_semestre()}° semestre",
                             size=14,
                             color=COLOR_GRIS
-                        ),
+                        )
                     ],
-
-                    spacing=2,
-                    tight=True
+                    spacing=2
                 ),
 
                 ft.Container(expand=True),
@@ -1064,36 +1058,38 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                     icon=ft.Icons.ACCOUNT_CIRCLE,
                     icon_color=COLOR_PRIMARIO,
                     icon_size=50,
-                    on_click=lambda _: cambiar_pantalla(mostrar_perfil)
+                    on_click=lambda _: cambiar_pantalla(
+                        mostrar_perfil
+                    )
                 )
-            ],
-
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER
+            ]
         )
 
-        # ── BUSCADOR ───────────────────────
         buscador = ft.Container(
             bgcolor=COLOR_CARD,
             border_radius=20,
             padding=15,
 
-            on_click=lambda _: cambiar_pantalla(mostrar_busqueda),
+            on_click=lambda _: cambiar_pantalla(
+                mostrar_busqueda
+            ),
 
             content=ft.Row(
                 controls=[
-                    ft.Icon(ft.Icons.SEARCH, color=COLOR_GRIS),
+
+                    ft.Icon(
+                        ft.Icons.SEARCH,
+                        color=COLOR_GRIS
+                    ),
 
                     ft.Text(
                         "Buscar materia...",
-                        color=COLOR_GRIS,
-                        size=16
+                        color=COLOR_GRIS
                     )
                 ]
             )
         )
 
-        # ── ALERTAS ───────────────────────
         alertas_texto = (
             f"{len(usuario.notificaciones)} alertas activas"
             if usuario.notificaciones
@@ -1105,7 +1101,9 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
             border_radius=20,
             padding=15,
 
-            on_click=lambda _: cambiar_pantalla(mostrar_alertas),
+            on_click=lambda _: cambiar_pantalla(
+                mostrar_alertas
+            ),
 
             content=ft.Column(
                 controls=[
@@ -1113,8 +1111,7 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                     ft.Text(
                         "Mis Alertas",
                         color=COLOR_PRIMARIO,
-                        weight="bold",
-                        size=16
+                        weight="bold"
                     ),
 
                     ft.Text(
@@ -1125,7 +1122,6 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
             )
         )
 
-        # ── SIMULADOR ─────────────────────
         tarjeta_simulador = ft.Container(
             bgcolor=COLOR_CARD,
             border_radius=20,
@@ -1147,65 +1143,24 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
 
                             ft.Text(
                                 "Ver posibles traslapes",
-                                color=COLOR_TEXTO,
-                                size=14
+                                color="white"
                             ),
 
                             ft.ElevatedButton(
                                 "Ir al simulador",
                                 bgcolor=COLOR_PRIMARIO,
                                 color="white",
+
                                 on_click=lambda _: cambiar_pantalla(
                                     mostrar_simulador
                                 )
                             )
-                        ],
-
-                        spacing=10
+                        ]
                     )
                 ]
             )
         )
 
-        # ── MATERIAS POPULARES ────────────
-        materias_populares = ft.Column(
-            controls=[
-
-                ft.Text(
-                    "Materias más solicitadas",
-                    color=COLOR_PRIMARIO,
-                    weight="bold",
-                    size=16
-                ),
-
-                ft.Row(
-                    controls=[
-
-                        ft.ElevatedButton(
-                            "Programación",
-                            bgcolor=COLOR_CARD,
-                            color="white"
-                        ),
-
-                        ft.ElevatedButton(
-                            "Cálculo",
-                            bgcolor=COLOR_CARD,
-                            color="white"
-                        ),
-
-                        ft.ElevatedButton(
-                            "Bases de Datos",
-                            bgcolor=COLOR_CARD,
-                            color="white"
-                        ),
-                    ],
-
-                    scroll=ft.ScrollMode.AUTO
-                )
-            ]
-        )
-
-        # ── NAVBAR ────────────────────────
         navbar = ft.Container(
             bgcolor=COLOR_CARD,
             border_radius=20,
@@ -1217,26 +1172,34 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                     ft.IconButton(
                         icon=ft.Icons.HOME,
                         icon_color=COLOR_PRIMARIO,
-                        on_click=lambda _: cambiar_pantalla(mostrar_home)
+                        on_click=lambda _: cambiar_pantalla(
+                            mostrar_home
+                        )
                     ),
 
                     ft.IconButton(
                         icon=ft.Icons.SEARCH,
                         icon_color="white",
-                        on_click=lambda _: cambiar_pantalla(mostrar_busqueda)
+                        on_click=lambda _: cambiar_pantalla(
+                            mostrar_busqueda
+                        )
                     ),
 
                     ft.IconButton(
                         icon=ft.Icons.NOTIFICATIONS,
                         icon_color="white",
-                        on_click=lambda _: cambiar_pantalla(mostrar_alertas)
+                        on_click=lambda _: cambiar_pantalla(
+                            mostrar_alertas
+                        )
                     ),
 
                     ft.IconButton(
                         icon=ft.Icons.PERSON,
                         icon_color="white",
-                        on_click=lambda _: cambiar_pantalla(mostrar_perfil)
-                    ),
+                        on_click=lambda _: cambiar_pantalla(
+                            mostrar_perfil
+                        )
+                    )
                 ],
 
                 alignment=ft.MainAxisAlignment.SPACE_AROUND
@@ -1252,24 +1215,14 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                     ft.Container(height=20),
                     seccion_alertas,
                     ft.Container(height=20),
-
-                    ft.Text(
-                        "Simulador de Horario",
-                        color=COLOR_PRIMARIO,
-                        weight="bold",
-                        size=16
-                    ),
-
                     tarjeta_simulador,
-                    ft.Container(height=20),
-                    materias_populares,
                     ft.Container(height=20),
                     navbar
                 ]
             )
         )
 
-    # ── BUSQUEDA ──────────────────────────────────────────
+    #  BUSQUEDA 
     def mostrar_busqueda():
 
         lista_resultados = ft.Column()
@@ -1296,9 +1249,9 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
 
                             ft.Text(
                                 materia.obtener_nombre(),
+                                color="white",
                                 size=18,
-                                weight="bold",
-                                color="white"
+                                weight="bold"
                             ),
 
                             ft.Text(
@@ -1306,20 +1259,9 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                                 color=COLOR_GRIS
                             ),
 
-                            ft.Text(
-                                f"Créditos: {materia.obtener_creditos()}",
-                                color=COLOR_GRIS
-                            ),
-
-                            ft.Text(
-                                f"Edificio {materia.obtener_edificio()} - Aula {materia.obtener_aula()}",
-                                color=COLOR_GRIS
-                            ),
-
                             ft.ElevatedButton(
                                 "Agregar alerta",
                                 bgcolor=COLOR_SECUNDARIO,
-                                color="black",
 
                                 on_click=lambda _, m=materia:
                                 agregar_alerta(m)
@@ -1369,7 +1311,7 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
             )
         )
 
-    # ── ALERTAS ───────────────────────────────────────────
+    #  ALERTAS 
     def mostrar_alertas():
 
         lista_alertas = ft.Column()
@@ -1388,14 +1330,9 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
 
                             ft.Text(
                                 materia.obtener_nombre(),
+                                color="white",
                                 size=18,
-                                weight="bold",
-                                color="white"
-                            ),
-
-                            ft.Text(
-                                materia.obtener_codigo(),
-                                color=COLOR_GRIS
+                                weight="bold"
                             ),
 
                             ft.ElevatedButton(
@@ -1424,128 +1361,33 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
         pagina.add(
             ft.Column(
                 controls=[
-
-                    ft.Row(
-                        controls=[
-
-                            ft.IconButton(
-                                icon=ft.Icons.ARROW_BACK,
-                                icon_color="white",
-                                on_click=lambda _: cambiar_pantalla(
-                                    mostrar_home
-                                )
-                            ),
-
-                            ft.Text(
-                                "Mis Alertas",
-                                color="white",
-                                size=22,
-                                weight="bold"
-                            )
-                        ]
-                    ),
-
                     lista_alertas
                 ]
             )
         )
 
-    # ── SIMULADOR ─────────────────────────────────────────
+    #  SIMULADOR 
     def mostrar_simulador():
 
-        dias = [
-            "Lunes",
-            "Martes",
-            "Miércoles",
-            "Jueves",
-            "Viernes"
-        ]
+        pagina.clean()
 
-        horas = [
-            7, 8, 9, 10, 11, 12,
-            13, 14, 15, 16, 17, 18
-        ]
-
-        colores_materias = [
-            "#c084fc",
-            "#f472b6",
-            "#0ea5e9",
-            "#22c55e",
-            "#f59e0b",
-            "#ef4444"
-        ]
-
-        def crear_celda(texto="", color=COLOR_CARD):
-
-            return ft.Container(
-                content=ft.Text(
-                    texto,
-                    color="white",
-                    size=10,
-                    text_align=ft.TextAlign.CENTER,
-                    weight="bold"
-                ),
-
-                width=95,
-                height=60,
-
-                alignment=ft.Alignment(0, 0),
-                bgcolor=color,
-
-                border_radius=10,
-
-                border=ft.border.all(1, "#334155")
-            )
         tabla = []
 
-        encabezado = ft.Row(
-            controls=[
-                crear_celda("Hora", COLOR_PRIMARIO)
-            ] +
-            [
-                crear_celda(dia, COLOR_PRIMARIO)
-                for dia in dias
-            ]
+        tabla.append(
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        width=100,
+                        height=60,
+                        bgcolor=COLOR_PRIMARIO,
+                        content=ft.Text(
+                            "Horario",
+                            color="white"
+                        )
+                    )
+                ]
+            )
         )
-
-        tabla.append(encabezado)
-
-        for hora in horas:
-
-            fila = [
-                crear_celda(f"{hora}:00", "#334155")
-            ]
-
-            for dia in dias:
-
-                texto = ""
-                color = COLOR_CARD
-
-                for indice, materia in enumerate(
-                    usuario.obtener_materias_actuales()
-                ):
-
-                    dias_materia = materia.obtener_dias_clase()
-
-                    hora_inicio = materia.obtenerHoraInicio().hora
-                    hora_fin = materia.obtenerHoraFin().hora
-
-                    if (
-                        dia in dias_materia
-                        and hora >= hora_inicio
-                        and hora < hora_fin
-                    ):
-
-                        texto = materia.obtener_nombre()
-                        color = colores_materias[
-                            indice % len(colores_materias)
-                        ]
-
-                fila.append(
-                    crear_celda(texto, color)
-                )
-
-            tabla.append(ft.Row(controls=fila))
 
         pagina.add(
             ft.Column(
@@ -1563,7 +1405,7 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                             ),
 
                             ft.Text(
-                                "Simulador de Horario",
+                                "Simulador",
                                 color="white",
                                 size=22,
                                 weight="bold"
@@ -1571,34 +1413,575 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                         ]
                     ),
 
-                   ft.Column(
-    controls=tabla,
-    scroll=ft.ScrollMode.AUTO
-),
+                    ft.Column(
+                        controls=tabla,
+                        scroll=ft.ScrollMode.AUTO
+                    ),
 
-ft.Container(height=15),
+                    ft.Container(height=15),
 
-ft.Row(
-    controls=[
-        ft.Text(
-            "⚠",
-            color="red",
-            size=20,
-            weight="bold"
-        ),
+                    ft.Row(
+                        controls=[
 
-        ft.Text(
-            "Indica conflicto entre 2 materias en el mismo horario",
-            color="white",
-            size=14
-        )
-    ],
-    spacing=10
+                            ft.Text(
+                                "⚠",
+                                color="red",
+                                size=20,
+                                weight="bold"
+                            ),
+
+                            ft.Text(
+                                "Indica conflicto entre materias",
+                                color="white"
+                            )
+                        ]
                     )
-
                 ]
             )
         )
 
-    # ── INICIO ────────────────────────────────────────────
+    #  INICIO 
+    mostrar_home()
+
+    
+
+def interfaz_administrador(pagina: ft.Page,usuario: Administrador,db_materias: list[Materia],db_alumnos: list[Alumno],db_maestros: list[Maestro]):
+
+    #  CONFIGURACION GENERAL 
+    pagina.title = "SIGHA - Administrador"
+    pagina.bgcolor = "#0f172a"
+    pagina.padding = 15
+    pagina.scroll = ft.ScrollMode.AUTO
+
+    pagina.clean()
+
+    #  COLORES 
+    COLOR_FONDO = "#0f172a"
+    COLOR_CARD = "#1e293b"
+    COLOR_PRIMARIO = "#c084fc"
+    COLOR_SECUNDARIO = "#f472b6"
+    COLOR_TEXTO = "white"
+    COLOR_GRIS = "#94a3b8"
+
+    #  CAMBIAR PANTALLA 
+    def cambiar_pantalla(vista):
+
+        pagina.clean()
+        vista()
+        pagina.update()
+
+    #  METRICAS 
+    total_alertas = 0
+
+    for alumno in db_alumnos:
+        total_alertas += len(alumno.notificaciones)
+
+    total_usuarios = (
+        len(db_alumnos) +
+        len(db_maestros)
+    )
+
+    total_materias = len(db_materias)
+
+    #  PERFIL 
+    def mostrar_perfil():
+
+        pagina.clean()
+
+        parte_superior = ft.Row(
+            controls=[
+
+                ft.IconButton(
+                    icon=ft.Icons.ARROW_BACK,
+                    icon_color="white",
+                    on_click=lambda _: cambiar_pantalla(
+                        mostrar_home
+                    )
+                ),
+
+                ft.Container(expand=True),
+
+                ft.Text(
+                    "Perfil Administrador",
+                    size=22,
+                    weight="bold",
+                    color="white"
+                ),
+
+                ft.Container(expand=True)
+            ]
+        )
+
+        informacion = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=20,
+
+            content=ft.Column(
+                controls=[
+
+                    ft.Icon(
+                        ft.Icons.ADMIN_PANEL_SETTINGS,
+                        size=100,
+                        color=COLOR_PRIMARIO
+                    ),
+
+                    ft.Text(
+                        usuario.nombre.obtenerNombre(),
+                        size=26,
+                        weight="bold",
+                        color="white"
+                    ),
+
+                    ft.Text(
+                        usuario.obtener_rango(),
+                        size=16,
+                        color=COLOR_GRIS
+                    ),
+
+                    ft.Divider(color="transparent"),
+
+                    ft.Text(
+                        f"Correo: {usuario.obtenerCorreo()}",
+                        color="white"
+                    ),
+
+                    ft.Text(
+                        f"Teléfono: {usuario.obtenerNumeroTelefono()}",
+                        color="white"
+                    ),
+
+                    ft.Text(
+                        f"Estado: {usuario.obtenerEstado()}",
+                        color="white"
+                    ),
+
+                    ft.Text(
+                        f"Rol: {usuario.obtenerRol()}",
+                        color="white"
+                    ),
+
+                    ft.Text(
+                        f"ID: {usuario.obtenerIdentificacion()}",
+                        color="white"
+                    ),
+                ],
+
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER
+            )
+        )
+
+        pagina.add(
+            ft.Column(
+                controls=[
+                    parte_superior,
+                    ft.Container(height=20),
+                    informacion
+                ]
+            )
+        )
+
+    #  GENERAR REPORTE 
+    def generar_reporte(e):
+
+        snack = ft.SnackBar(
+            content=ft.Text(
+                "Reporte generado correctamente"
+            )
+        )
+
+        pagina.snack_bar = snack
+        snack.open = True
+
+        pagina.update()
+
+    #  SIMULAR LIBERACION 
+    def simular_liberacion(e):
+
+        for materia in db_materias:
+
+            if hasattr(materia, "cupos_disponibles"):
+                materia.cupos_disponibles += 5
+
+        snack = ft.SnackBar(
+            content=ft.Text(
+                "Liberación de cupos simulada correctamente"
+            )
+        )
+
+        pagina.snack_bar = snack
+        snack.open = True
+
+        pagina.update()
+
+    #  HOME 
+    def mostrar_home():
+
+        pagina.clean()
+
+        #  PARTE SUPERIOR 
+        parte_superior = ft.Row(
+            controls=[
+
+                ft.Column(
+                    controls=[
+
+                        ft.Text(
+                            "Administración",
+                            size=28,
+                            weight="bold",
+                            color="white"
+                        ),
+
+                        ft.Text(
+                            usuario.obtener_rango(),
+                            size=14,
+                            color=COLOR_GRIS
+                        )
+                    ]
+                ),
+
+                ft.Container(expand=True),
+
+                ft.IconButton(
+                    icon=ft.Icons.ADMIN_PANEL_SETTINGS,
+                    icon_color=COLOR_PRIMARIO,
+                    icon_size=50,
+                    on_click=lambda _: cambiar_pantalla(
+                        mostrar_perfil
+                    )
+                )
+            ]
+        )
+
+        #  TARJETAS DE METRICAS 
+        metricas = ft.Row(
+            controls=[
+
+                ft.Container(
+                    expand=True,
+                    bgcolor=COLOR_CARD,
+                    border_radius=20,
+                    padding=15,
+
+                    content=ft.Column(
+                        controls=[
+
+                            ft.Icon(
+                                ft.Icons.NOTIFICATIONS,
+                                color=COLOR_SECUNDARIO,
+                                size=35
+                            ),
+
+                            ft.Text(
+                                str(total_alertas),
+                                size=24,
+                                weight="bold",
+                                color="white"
+                            ),
+
+                            ft.Text(
+                                "Alertas activas",
+                                color=COLOR_GRIS
+                            )
+                        ],
+
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                    )
+                ),
+
+                ft.Container(
+                    expand=True,
+                    bgcolor=COLOR_CARD,
+                    border_radius=20,
+                    padding=15,
+
+                    content=ft.Column(
+                        controls=[
+
+                            ft.Icon(
+                                ft.Icons.PEOPLE,
+                                color=COLOR_PRIMARIO,
+                                size=35
+                            ),
+
+                            ft.Text(
+                                str(total_usuarios),
+                                size=24,
+                                weight="bold",
+                                color="white"
+                            ),
+
+                            ft.Text(
+                                "Usuarios activos",
+                                color=COLOR_GRIS
+                            )
+                        ],
+
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                    )
+                ),
+
+                ft.Container(
+                    expand=True,
+                    bgcolor=COLOR_CARD,
+                    border_radius=20,
+                    padding=15,
+
+                    content=ft.Column(
+                        controls=[
+
+                            ft.Icon(
+                                ft.Icons.MENU_BOOK,
+                                color="#22c55e",
+                                size=35
+                            ),
+
+                            ft.Text(
+                                str(total_materias),
+                                size=24,
+                                weight="bold",
+                                color="white"
+                            ),
+
+                            ft.Text(
+                                "Materias",
+                                color=COLOR_GRIS
+                            )
+                        ],
+
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                    )
+                )
+            ]
+        )
+
+        #  GRAFICO 
+        grafico = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=20,
+
+            content=ft.Column(
+                controls=[
+
+                    ft.Text(
+                        "Materias más solicitadas",
+                        size=18,
+                        weight="bold",
+                        color="white"
+                    ),
+
+                    ft.Container(height=10),
+
+                    ft.Text(
+                        "Programación",
+                        color="white"
+                    ),
+
+                    ft.ProgressBar(
+                        value=0.90,
+                        color="#c084fc",
+                        bgcolor="#334155"
+                    ),
+
+                    ft.Container(height=10),
+
+                    ft.Text(
+                        "Cálculo",
+                        color="white"
+                    ),
+
+                    ft.ProgressBar(
+                        value=0.75,
+                        color="#f472b6",
+                        bgcolor="#334155"
+                    ),
+
+                    ft.Container(height=10),
+
+                    ft.Text(
+                        "Bases de Datos",
+                        color="white"
+                    ),
+
+                    ft.ProgressBar(
+                        value=0.60,
+                        color="#0ea5e9",
+                        bgcolor="#334155"
+                    )
+                ]
+            )
+        )
+
+        #  OCUPACION 
+        ocupacion = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=20,
+
+            content=ft.Column(
+                controls=[
+
+                    ft.Text(
+                        "Ocupación de aulas",
+                        size=18,
+                        weight="bold",
+                        color="white"
+                    ),
+
+                    ft.Container(height=10),
+
+                    ft.Row(
+                        controls=[
+                            ft.Text(
+                                "Laboratorio 3",
+                                color="white"
+                            ),
+
+                            ft.Container(expand=True),
+
+                            ft.Text(
+                                "85%",
+                                color="#ef4444"
+                            )
+                        ]
+                    ),
+
+                    ft.Row(
+                        controls=[
+                            ft.Text(
+                                "Edificio R Aula 2",
+                                color="white"
+                            ),
+
+                            ft.Container(expand=True),
+
+                            ft.Text(
+                                "65%",
+                                color="#f59e0b"
+                            )
+                        ]
+                    ),
+
+                    ft.Row(
+                        controls=[
+                            ft.Text(
+                                "Aula A1",
+                                color="white"
+                            ),
+
+                            ft.Container(expand=True),
+
+                            ft.Text(
+                                "40%",
+                                color="#22c55e"
+                            )
+                        ]
+                    )
+                ]
+            )
+        )
+
+        #  BOTONES 
+        botones = ft.Column(
+            controls=[
+
+                ft.ElevatedButton(
+                    "Generar Reporte",
+                    bgcolor=COLOR_SECUNDARIO,
+                    color="black",
+                    height=50,
+                    width=300,
+                    on_click=generar_reporte
+                ),
+
+                ft.ElevatedButton(
+                    "Simular Liberación de Cupos",
+                    bgcolor=COLOR_PRIMARIO,
+                    color="white",
+                    height=50,
+                    width=300,
+                    on_click=simular_liberacion
+                )
+            ],
+
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=15
+        )
+
+        #  NAVBAR 
+        navbar = ft.Container(
+            bgcolor=COLOR_CARD,
+            border_radius=20,
+            padding=10,
+
+            content=ft.Row(
+                controls=[
+
+                    ft.IconButton(
+                        icon=ft.Icons.HOME,
+                        icon_color=COLOR_PRIMARIO,
+                        on_click=lambda _: cambiar_pantalla(
+                            mostrar_home
+                        )
+                    ),
+
+                    ft.IconButton(
+                        icon=ft.Icons.BAR_CHART,
+                        icon_color="white"
+                    ),
+
+                    ft.IconButton(
+                        icon=ft.Icons.NOTIFICATIONS,
+                        icon_color="white"
+                    ),
+
+                    ft.IconButton(
+                        icon=ft.Icons.PERSON,
+                        icon_color="white",
+                        on_click=lambda _: cambiar_pantalla(
+                            mostrar_perfil
+                        )
+                    )
+                ],
+
+                alignment=ft.MainAxisAlignment.SPACE_AROUND
+            )
+        )
+
+        #  AGREGARTODO 
+        pagina.add(
+
+            ft.Column(
+                controls=[
+
+                    parte_superior,
+
+                    ft.Container(height=20),
+
+                    metricas,
+
+                    ft.Container(height=20),
+
+                    grafico,
+
+                    ft.Container(height=20),
+
+                    ocupacion,
+
+                    ft.Container(height=25),
+
+                    botones,
+
+                    ft.Container(height=25),
+
+                    navbar
+                ]
+            )
+        )
+
+        pagina.update()
+
+    # ───────────────── INICIO ─────────────────
     mostrar_home()
