@@ -1,5 +1,3 @@
-from poetry.console.commands import self
-
 from materia import Materia
 
 class Alerta_Materia:

@@ -8,7 +8,8 @@ class Maestro(Usuario):
                  departamento:str = "Computacion",
                  disponibilidad = None,
                  materias:list[Materia] = [],
-                 notificaciones: list[Alerta] = None,):
+                 notificaciones: list[Alerta] = None,
+                 peticiones :list[Alerta] = []):
 
 
         super().__init__()
@@ -16,6 +17,7 @@ class Maestro(Usuario):
         self.disponibilidad = disponibilidad if disponibilidad is not None else [[0]*7 for _ in range(7)]
         self.materias = materias if materias is not None else []
         self.alertas = notificaciones if notificaciones is not None else []
+        self.peticiones = peticiones if peticiones is not None else []
 
     def __str__(self):
         return (f"{super().__str__()} \n"
@@ -39,10 +41,19 @@ class Maestro(Usuario):
 
     def depurar_alertas(self):
 
-        if self.alertas is None:
+        if not self.alertas:
             return
 
         self.alertas = [alerta for alerta in self.alertas if not alerta.obtener_visto()]
+
+    def agregar_peticion(self, peticion):
+        self.peticiones.append(peticion)
+
+    def depurar_peticion(self):
+        if not self.peticiones:
+            return
+
+        self.peticiones = [peticion for peticion in self.peticiones if not peticion.obtener_visto()]
 
     def poner_disponibilidad(self, disponibilidad):
         self.disponibilidad = disponibilidad
@@ -55,3 +66,12 @@ class Maestro(Usuario):
 
     def obtener_notifiaciones(self):
         return self.notificaciones
+
+    def obtener_materias(self):
+        return self.materias
+
+    def obtener_alertas(self):
+        return self.alertas
+
+    def obtener_peticiones(self):
+        return self.peticiones

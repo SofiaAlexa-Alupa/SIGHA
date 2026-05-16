@@ -1,894 +1,908 @@
+from pathlib import Path
+
 import flet as ft
 from datetime import datetime
 
-
-
-import usuario
+import calendar
+from fecha import Fecha
 from alertas import Alerta
 from hora import Hora
 from maestro import Maestro
 from alumno import Alumno
-from nombre import Nombre
 from materia import Materia
+from administrador import Administrador
+from fpdf import FPDF
+import platform
+import os
 
 BG      = "#0f172a"   # Fondo oscuro principal
 CARD    = "#1e293b"   # Fondo de las tarjetas
 PURPLE  = "#7c3aed"   # Morado para acentos
-TEXT    = "#ffffff"   # Texto blanco
-GREY    = "#94a3b8"   # Texto gris secundario
+PURPLE_MIDNIGHT = "#280137"
+TEXT    = "#white"   # Texto blanco
+TEXT_SECONDARY = "#94a3b8"   # Texto gris secundario
 BORDER = "#818cf8"
-
-
-
-
-def login(pagina=ft.Page):
-    # Funciones de login
-    def funcion_continuar(event):
-        if caja_codigo.value:
-            usuario_codigo = caja_codigo.value
-            caja_codigo.error = None
-        else:
-            caja_codigo.error = "Ingrese una contraseña valida"
-
-        if caja_nip.value:
-            contraseña = caja_nip
-            caja_nip.error = None
-        else:
-            caja_nip.error = "Ingrese una contraseña valida"
-
-    # TODO implementar la funcion que aga posible la comunicacion de autentificacion
-
-    pagina.title = "SIGHA - Login"  # El nombre durante el login sera este
-    usuario = None
-    usuario_codigo = ""
-    contraseña = ""
-
-    caja_codigo = ft.TextField(  # Donde el usuario debera de ingresar el dato codigo
-        label="Usuario",  # Nombre de lo que vamos a pedir, aparecera en el recuadro
-        border_color="1d1e33",  # Color del borde del recuadro
-        hint_text="Ingrese su codigo o nombre de usuario"
-
-    )
-
-    caja_nip = ft.TextField(
-        label="Contraseña",  # Nombre de que pedimos
-        hint_text="Ingrese tu contraseña o NIP",  # Cuadro de texto que aparece al dejar el mouse
-        border_color="1d1e33",  # Color del borde
-        password=True,  # Indica que el modo contraseña esta activo
-        can_reveal_password=True,  # Activa la opcion de revelar conraseña
-        prefix_icon=ft.Icons.PASSWORD_OUTLINED,  # Remplaza los caracteres para que no se vean
-
-    )
-
-    boton_continuar = ft.ElevatedButton(
-        content="Continuar",
-        width=300,
-        height=50,
-        on_click=funcion_continuar,
-        style=ft.ButtonStyle(
-            bgcolor="#0ea5e9",
-            color="white",
-            shape=ft.RoundedRectangleBorder(radius=10)
-        )
-    )
-
-    pagina_login = ft.Container(
-        content=ft.Column(
-            controls=[
-
-                # TODO poner imagen del logotipo
-
-                ft.Text("INICIO DE SESION",
-                        color="white",
-                        weight="bold",
-                        size=26,
-                        ),
-
-                ft.Text("Ingrese sus credenciales",
-                        color="white",
-                        size=14,
-                        ),
-
-                caja_codigo,
-                caja_nip,
-                boton_continuar
-            ]
-        )
-    )
-
-    pagina.add(pagina_login)
-
-
-    return usuario
+PRIMARY = "#c084fc"
+SECONDARY = "#f472b6"
 
 
 
 
 
+def login(pagina: ft.Page):
+     pagina.bg = BG
+     pagina.title = "Inicio de sesion"
+     pagina.padding = 0
+     pagina.vertical_alignment = ft.MainAxisAlignment.CENTER
+     pagina.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+
+     usuario = None
+     contraseña = None
+
+     codigo_usuario = ft.TextField(
+         label="Ingrese su codigo",
+         border_color=SECONDARY,
+         focused_border_color=PRIMARY,
+         border_radius=2,
+         color=TEXT,
+         bgcolor=CARD,
+         width=350
+     )
+
+     contraseña_usuario = ft.TextField(
+         label="Ingrese su contraseña",
+         border_color=SECONDARY,
+         focused_border_color=PRIMARY,
+         border_radius=2,
+         color=TEXT,
+         bgcolor=CARD,
+         password=True,
+         can_reveal_password=True,
+         width=350
+     )
+
+     boton_continuar = ft.ElevatedButton(
+         "continuar",
+         on_click=lambda e: accion_continuar(),
+         style=ft.ButtonStyle(
+             color=SECONDARY,
+             shape=ft.RoundedRectangleBorder(radius=10),
+             bgcolor=PURPLE_MIDNIGHT,
+         )
+
+     )
+
+     build = ft.Container(
+         content=ft.Column(
+             controls=[
+                 codigo_usuario,
+                 contraseña_usuario,
+                 boton_continuar
+             ],
+             spacing=10,
+             alignment=ft.MainAxisAlignment.CENTER,
+             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+
+         ),
+         alignment=ft.Alignment.CENTER,
+         expand=True,
+         margin=36
+     )
+
+     pagina.add(build)
 
 
+     def accion_continuar():
+        campos_validos = True
+        contraseña_usuario.error = None
+        codigo_usuario.error = None
+
+        if not contraseña_usuario.value:
+            contraseña_usuario.error = "Ingrese una contraseñá valida"
+            campos_validos = False
+
+        if not codigo_usuario.value:
+            codigo_usuario.error = "Ingrese un codigo valido"
+            campos_validos = False
+
+        if campos_validos:
+            pass
+            #Aqui se integra la base de datos
 
 
+        pagina.update()
 
+def interfaz_maestro_nueva(pagina: ft.Page, usuario: Maestro):
 
-
-
-
-def interfaz_maestro(pagina: ft.Page, usuario: Maestro):
-
-    pagina.padding = 0
     pagina.vertical_alignment = ft.MainAxisAlignment.START
-    pagina.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
+    pagina.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    cabezal = ft.Container(
-        content=ft.Row(
-            [
+    cabezera = ft.Container(
+        content = ft.Row(
+            controls = [
                 ft.Column(
-                    [
+                    controls = [
                         ft.Text(f"Hola, {usuario.obtenerNombre()}",
-                                color=ft.Colors.WHITE,
-                                size=24),
-                        ft.Text(f"{usuario.obtener_departamento()}",
-                                color=ft.Colors.GREY,
-                                size=10),
+                                color = TEXT,
+                                size = 36,
+                                weight = ft.FontWeight.BOLD,
+                                ),
+                        ft.Text(f"{usuario.obtener_departamento()}"),
                     ],
                     spacing=2,
                 ),
+
                 ft.Icon(ft.Icons.ACCOUNT_CIRCLE_OUTLINED,
-                        color=ft.Colors.RED_ACCENT,
-                        size=60),
+                        color = ft.Colors.RED_ACCENT,
+                        size = 64)
+
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-            vertical_alignment=ft.CrossAxisAlignment.CENTER,
+            vertical_alignment= ft.CrossAxisAlignment.CENTER,
+            expand = True
         ),
-        bgcolor=CARD,
-        padding=ft.Padding.only(left=20, right=20, top=40, bottom=12),
+
+        alignment = ft.Alignment.TOP_CENTER,
+        bgcolor = CARD,
+        padding = ft.Padding.all(10)
     )
 
+    seccion_1 = seccion_1_maestro(pagina, usuario)
+    seccion_2 = seccion_2_Disponibilidad(pagina, usuario)
+    seccion_3 = seccion_3_Notificaciones(pagina, usuario)
 
-    def menu_hogar():
-        seccion_1 = seccion_1_materias_registradas(pagina, usuario)
-        seccion_2 = seccion_2_disponibilidad(pagina, usuario)
-        seccion_3 = seccion_3_Notificaciones(pagina, usuario)
 
-        pagina.controls.clear()
-        pagina.add(cabezal)          # ← El cabezal siempre aparece
-        pagina.add(ft.Container(
-            content=ft.Column(
-                [
-                    seccion_1,
-                    seccion_2,
-                    seccion_3,
-                ],
-                scroll=ft.ScrollMode.AUTO,  # ← Scroll si el contenido es largo
-                spacing=10,
-            ),
-            padding=ft.Padding.symmetric(horizontal=16, vertical=10),
-            expand=True,
-        ))
-        pagina.update()
 
-    def control_barra_navegacion(evento):
-        indice = evento.control.selected_index  # ← selected_index correcto
 
-        if indice == 0:
-            menu_hogar()
-        elif indice == 1:
-            pass
-        elif indice == 2:
-            notificaciones_maestro(pagina, usuario)
-        elif indice == 3:
-            perfil_maestro(pagina, usuario)
 
-    barra_inferior = ft.NavigationBar(
-        bgcolor=CARD,
-        indicator_color=PURPLE,
-        selected_index=0,
-        on_change=control_barra_navegacion,
-        destinations=[
-            ft.NavigationBarDestination(
-                icon=ft.Icons.HOME_OUTLINED,
-                selected_icon=ft.Icons.HOME,
-                label="Inicio",
-            ),
-            ft.NavigationBarDestination(
-                icon=ft.Icons.CALENDAR_MONTH_OUTLINED,
-                selected_icon=ft.Icons.CALENDAR_MONTH,
-                label="Buscar",
-            ),
-            ft.NavigationBarDestination(
-                icon=ft.Icons.NOTIFICATIONS_OUTLINED,
-                selected_icon=ft.Icons.NOTIFICATIONS,
-                label="Alertas",
-            ),
-            ft.NavigationBarDestination(
-                icon=ft.Icons.PERSON_OUTLINE,
-                selected_icon=ft.Icons.PERSON,
-                label="Perfil",
-            ),
-        ],
-    )
-
-    pagina.navigation_bar = barra_inferior
-    menu_hogar()
-
-def mostrar_informacion_materia_vista_profesor(pagina: ft.Page, materia: Materia):
-
-    def build_lista_alumnos(materia: Materia):
-        # Si la lista está vacía mostramos mensaje
-        if not materia.alumnos:
-            return ft.Container(
-                content=ft.Row(
-                    [
-                        ft.Icon(ft.Icons.PERSON_OFF_OUTLINED, color=GREY, size=40),
-                        ft.Text(
-                            "No hay alumnos en esta materia",
-                            color=GREY,
-                            size=14,
-                            italic=True,
-                        )
-                    ],
-                    spacing=10,
-                ),
-                alignment=ft.Alignment.CENTER,
-                bgcolor=CARD,
-                padding=ft.Padding.all(16),
-            )
-
-        # Se ordena  la lista por nombre
-        alumnos = materia.obtener_alumnos()
-        alumnos.sort(key=lambda a: str(a.obtenerNombre()))  # ← key= y sin asignar
-
-        return ft.Container(
-            content=ft.Column(
-                [
-                    # Encabezado de la tabla
-                    ft.Row(
-                        [
-                            ft.Text("Num",      size=14, color=GREY),
-                            ft.Text("Nombre",   size=14, color=GREY, expand=True),
-                            ft.Text("Semestre", size=14, color=GREY),
-                        ],
-                        spacing=16,
-                    ),
-
-                    # Filas de alumnos
-                    ft.Column(
-                        [
-                            ft.Container(
-                                content=ft.Row(
-                                    [
-                                        ft.Text(str(i),                        # ← número
-                                                size=13, color=GREY),
-                                        ft.Text(str(alumno.obtenerNombre()),
-                                                size=13, color=TEXT, expand=True),
-                                        ft.Text(str(alumno.obtener_semestre()),
-                                                size=13, color=GREY),
-                                    ],
-                                    spacing=16,
-                                ),
-                                bgcolor=CARD,
-                                border_radius=8,
-                                padding=ft.Padding.symmetric(horizontal=12, vertical=8),
-                            )
-                            for i, alumno in enumerate(alumnos, start=1)  # ← enumerate correcto
-                        ],
-                        spacing=6,
-                        scroll=ft.ScrollMode.AUTO,
-                    )
-                ],
-                spacing=8,
-            ),
-            bgcolor=BG,
-            border_radius=12,
-            padding=ft.Padding.all(12),
-        )
-
-    # Header
-    header = ft.Container(
-        content=ft.Row(
+    build = ft.Container(
+        content = ft.Column(
             [
-                ft.IconButton(
-                    icon=ft.Icons.ARROW_BACK_OUTLINED,
-                    icon_size=30,
-                    on_click=lambda evento: (pagina.views.pop(), pagina.update()),
-                ),
-                ft.Container(
-                    content=ft.Text(
-                        "Detalles de la Materia",
-                        size=24,
-                        italic=True,
-                        weight="bold",
-                        color=TEXT,
-                    ),
-                    expand=True,
-                    alignment=ft.Alignment.CENTER  # ← minúsculas
-                )
+                cabezera,
+                seccion_1,
+                seccion_2,
+                seccion_3,
             ]
         ),
-        bgcolor=CARD,
-        padding=ft.Padding.only(top=40, bottom=12),
+        alignment = ft.Alignment.TOP_CENTER,
     )
 
-    # Días de clase unidos en un string
-    dias_clase = ""
-    if materia.obtener_dias_clase() is not None:
-        for dia in materia.obtener_dias_clase():
-            dias_clase += dia + " "  # ← Espacio entre días
+    pagina.add(build)
 
-    # Cuerpo con info de la materia
-    cuerpo = ft.Container(
-        content=ft.Column(
-            [
-                ft.Container(
-                    content=ft.Column(
-                        [
-                            ft.Text(
-                                f"Materia: {materia.obtener_nombre()}",
-                                color=GREY,
-                                size=16,
+def seccion_1_maestro(pagina: ft.Page, usuario:Maestro):
+    materia_actual, materia_siguiente = filtrar_materia_hoy(usuario)
+
+    materia_actual= Materia()
+    materia_siguiente = Materia()
+
+    boton_materia_actual = None
+    boton_materia_siguiente = None
+
+    header = ft.Text("Seccion 1: Mis alertas clase",
+                     color = PURPLE,
+                     weight = ft.FontWeight.BOLD,
+                     size = 16)
+
+    if materia_actual is None:
+        return ft.Container(
+            content = ft.Column(
+                controls = [
+                    header,
+
+                    ft.Container(content = ft.Text("No tienes mas clases el dia de hoy",
+                              size = 20,
+                              color = TEXT,
+                              weight = ft.FontWeight.W_800),
+                                 bgcolor = CARD,
+                                 padding = ft.Padding.all(10),
+                                 alignment = ft.Alignment.CENTER_LEFT,
+                                 margin = ft.Margin.only(left = 0, right = 560,),
+                                 border = ft.Border.all(3, PURPLE_MIDNIGHT)
+                                 )
+                ]
+            )
+        )
+    else:
+        boton_materia_actual = ft.Column(
+            controls = [
+
+                ft.Text("Clase actual: ",
+                        size = 16,
+                        color = TEXT_SECONDARY,
+                        weight = ft.FontWeight.W_600),
+
+                ft.Row(
+                    controls=[
+                        ft.Icon(ft.Icons.ACCESS_TIME_OUTLINED,
+                                color=ft.Colors.PURPLE,
+                                size=64,
+                                ),
+                        ft.Button(
+                            content=ft.Text(
+                                f"Materia: {materia_actual.obtener_nombre()}\n Aula: {materia_actual.obtener_aula()} | Edificio {materia_actual.obtener_edificio()}",
+                                color=TEXT,
+                                size=24,
+                                italic=True, ),
+                            style=ft.ButtonStyle(
+                                bgcolor={
+                                    ft.ControlState.HOVERED: PURPLE_MIDNIGHT,
+                                    ft.ControlState.DEFAULT: CARD,
+                                },
+                                shape=ft.BeveledRectangleBorder(radius=5),
+                                side = ft.BorderSide(width=2, color = PURPLE),
                             ),
-                            ft.Text(
-                                f"Horario: {dias_clase} {materia.obtenerHoraInicio()} a {materia.obtenerHoraFin()}",
-                                color=GREY,
-                                size=16,
+                            on_click = lambda e: mostrar_informacion_materia_maestro(pagina, materia_actual)
+
+                        )
+                    ]
+                )
+            ]
+        )
+
+        if materia_siguiente is None:
+            boton_materia_siguiente = ft.Container(
+                ft.Text("Ultima materia del dia",
+                        color = TEXT_SECONDARY,
+                        size = 16,
+                        weight = ft.FontWeight.W_600)
+            )
+        else:
+            boton_materia_siguiente = ft.Column(
+            controls = [
+
+                ft.Text("Su siguiente clase: ",
+                        size = 16,
+                        color = TEXT_SECONDARY,
+                        weight = ft.FontWeight.W_600),
+
+                ft.Row(
+                    controls=[
+                        ft.Icon(ft.Icons.ACCESS_TIME_OUTLINED,
+                                color=TEXT_SECONDARY,
+                                size=64,
+                                ),
+                        ft.Button(
+                            content=ft.Text(
+                                f"Materia: {materia_siguiente.obtener_nombre()}\n Aula: {materia_siguiente.obtener_aula()} | Edificio {materia_siguiente.obtener_edificio()}",
+                                color=TEXT,
+                                size=24,
+                                italic=True, ),
+                            style=ft.ButtonStyle(
+                                bgcolor={
+                                    ft.ControlState.HOVERED: TEXT_SECONDARY,
+                                    ft.ControlState.DEFAULT: CARD,
+                                },
+                                shape=ft.BeveledRectangleBorder(radius=5),
+                                side = ft.BorderSide(width=2, color = TEXT_SECONDARY),
                             ),
-                            ft.Text(
-                                f"Aula: {materia.obtener_aula()}  –  Edificio: {materia.obtener_edificio()}",
-                                color=GREY,
-                                size=16,
-                            ),
-                            ft.Text(
-                                f"Cupos: {materia.obtenerCuposDisponibles()} / {materia.obtenerCuposTotales()}",
-                                color=GREY,
-                                size=16,
-                            ),
-                        ],
-                        spacing=8,
-                    ),
-                    bgcolor=CARD,
-                    border=ft.Border.all(2, ft.Colors.GREY_500),  # ← minúsculas
-                    border_radius=12,
-                    padding=ft.Padding.all(16),
-                    alignment=ft.Alignment.CENTER,# ← minúsculas
-                ),
+                            on_click = lambda event: mostrar_informacion_materia_maestro(pagina, materia_siguiente)
+
+                        )
+                    ]
+                )
+            ]
+        )
+
+
+    build = ft.Container(
+        content  = ft.Column(
+            controls = [
+                header,
+                boton_materia_actual,
+                boton_materia_siguiente,
             ],
-            spacing=12,
-            scroll=ft.ScrollMode.AUTO,
-        ),
-        padding=ft.Padding.all(16),
-        alignment=ft.Alignment.CENTER,
-        expand=True,
+            spacing=10,
+        )
     )
 
-    # Lista de alumnos
-    vista_alumnos = build_lista_alumnos(materia)
+    return build
 
-    # Vista completa
-    vista_completa = ft.View(
-        controls=[
-            header,
-            cuerpo,
-            vista_alumnos,
-        ],
-        bgcolor=BG,
-    )
+def filtrar_materia_hoy(usuario:Maestro ):
 
-    pagina.views.append(vista_completa)
-    pagina.update()
+    if not usuario.obtener_materias():#En caso de no tener materias en mi lista, retorna nada
+        return None, None
 
-def obtener_clases_activas(usuario: Maestro):#Funcion que nosdevuelve la amtreia que tiene en este momento que enseñar yla materia que sigue
-    timepo_actual = datetime.now()#Obtener la fehca actual
-    dias_mapa = {0 : "L", 1 : "M", 2 : "X", 3 : "J", 4 : "V", 5 : "S", 6 : "D"}
-    dia_hoy = dias_mapa[timepo_actual.weekday()]
+
+    materia_actual = None
+    materia_siguiente = None
+    timepo_actual = datetime.now()
+    mapa_dias = {0: "Lunes", 1:"Martes", 2:"Miercoles", 3:"Jueves", 4:"Viernes", 5:"Sabado", 6:"Domingo"}
+    dia_actual = mapa_dias[timepo_actual.weekday()]
     hora_actual = Hora(timepo_actual.hour, timepo_actual.minute)
 
-    print(usuario)
-
-
-    materias_hoy = [
-        materia for materia in usuario.materias
-        if dia_hoy in materia.obtener_dias_clase()
-    ]
-
-    materias_hoy.sort(key = lambda m: m.obtenerHoraInicio())
-
-    activa = None
-    proxima = None
+    materias_hoy = [materia for materia in usuario.obtener_materias() if dia_actual in materia.obtener_dias_clase()]
 
     for materia in materias_hoy:
         hora_inicio = materia.obtenerHoraInicio()
         hora_fin = materia.obtenerHoraFin()
 
         if hora_inicio <= hora_actual <= hora_fin:
-            activa = materia
+            materia_actual = materia
 
-        elif hora_actual < hora_inicio and proxima is None:
-            proxima = materia
+        elif hora_actual < hora_inicio and materia_siguiente is None:
+            materia_siguiente = materia
 
+    return materia_actual, materia_siguiente
 
+def mostrar_informacion_materia_maestro(pagina:ft.Page, materia:Materia):
+    alumnos = materia.obtener_alumnos()
+    alumnos.sort(key = lambda alumno: alumno.obtenerNombre())
 
-    return activa, proxima
-
-def seccion_1_materias_registradas(pagina:ft.Page, usuario: Maestro):
-
-    #materia_activa, materia_proxima = obtener_clases_activas(usuario=usuario)
-    boton_activo = []
-
-    materia_activa = Materia()
-    materia_proxima = Materia()
-
-    boton_activo.append(ft.Text(
-        "Mis alertas clase (Sección 1)",
-        color = PURPLE,
-        size = 16,
-        italic = True,
-        weight = "bold"
-    ))
-
-    if materia_activa is None:
-         boton_activo.append( ft.Container(
-            content= ft.Row(
-                [
-                    ft.Text(
-                        "No tienes mas materias el dia de hoy",
-                        color=GREY,
-                        size=14,
-                        italic=True,
-                    ),
-
-                    ft.Icon(ft.Icons.WEEKEND_OUTLINED,
-                            color = ft.Colors.GREY_500,
-                            size = 60,
-                            )
-                ],
-                spacing = 50
-            ),
-            border=ft.Border.all(1, GREY),
-            border_radius=10,
-            padding=ft.Padding.symmetric(horizontal=12, vertical=8),
-            bgcolor= CARD,
-            alignment=ft.Alignment.CENTER,
-        )
-         )
-    elif materia_activa is not None:
-        boton_activo.append( ft.Container(
-
-            content = ft.Column(
-                [
-                    ft.Text("Su clase actual: ",
-                            color=GREY,
-                            size=16,
-                            weight="bold"),
-
-                    ft.Row(
-                        [
-                            ft.ElevatedButton(
-                                content=f"Materia: {materia_activa.obtener_nombre()} | Edificio: {materia_activa.obtener_edificio()} | Aula: {materia_activa.obtener_aula()}",
-                                on_click=lambda e: mostrar_informacion_materia_vista_profesor(pagina, materia_proxima),
-                                expand=True,
-                                width=float("inf"),
-                                height=60,
-                                style=ft.ButtonStyle(
-                                    bgcolor=CARD,
-                                    side = ft.BorderSide(width=2, color =ft.Colors.GREEN)
-                                ),
-                            ),
-                            ft.Icon(ft.Icons.ACCESS_TIME,
-                                    color = ft.Colors.GREEN,
-                                    size = 50)
-                        ]
-                    )
-                ],
-                spacing = 6
-            )
-        )
-    )
-        if materia_proxima is not None:
-            boton_activo.append( ft.Container(
-                content = ft.Column(
-                    [
-                        ft.Text("Su siguiente clase: ",
-                                color=GREY,
-                                size = 16,
-                                weight="bold"),
-
-                        ft.Row(
-                            [
-                                ft.ElevatedButton(
-                                    content=f"{materia_proxima.obtener_nombre()} | Edificio: {materia_proxima.obtener_edificio()} Aula: {materia_proxima.obtener_aula()}",
-                                    on_click= lambda e: mostrar_informacion_materia_vista_profesor(pagina, materia_proxima),
-                                    expand=True,
-                                    width=float("inf"),
-                                    height=60,
-                                    style=ft.ButtonStyle(
-                                        bgcolor=CARD,
-                                        side = ft.BorderSide(2, ft.Colors.GREY_300))
-                                ),
-                                ft.Icon(ft.Icons.ACCESS_TIME,
-                                        color= ft.Colors.GREY_300,
-                                        size=50)
-                            ]
-                        )
-                    ]
-                ),
-            )
-        )
-
-    return ft.Container(
-        content = ft.Column(
-            boton_activo
-        )
-    )
-
-
-def seccion_2_disponibilidad(pagina: ft.Page, usuario: Maestro):
-    parte_izquiera = ft.Icon(
-        ft.Icons.TIMER_OUTLINED,
-        color = ft.Colors.BLACK,
-        size = 120
-    )
-
-    parte_derecha = ft.Column(
-        [
-            ft.Text("Mi disponibilidad",
-                    size = 20),
-
-            ft.Text("Registrar disponibilidad",
-                    size = 20)
-        ]
-    )
-
-
-
-    integrado = ft.Container(
-        content = ft.Column(
-            [
-            ft.Text(
-                "Disponibilidad (Sección 2):",
-                color = PURPLE,
-                size = 16,
-                italic = True,
-                weight = "bold"
-            ),
-
-            ft.ElevatedButton(
-                content = ft.Row(
-                    [
-                        parte_izquiera,
-                        parte_derecha,
-                    ],
-                    spacing = 30
-                ),
-                    style = ft.ButtonStyle(
-                    bgcolor = CARD,
-                    side = ft.BorderSide(2, ft.Colors.AMBER_400)
-                ),
-                width = float("inf"),
-                expand = True,
-                on_click = lambda x: disponibilidad_maestro(pagina, usuario)
-            )
-                ]
-        )
-    )
-
-
-    return  integrado
-
-def seccion_3_Notificaciones(pagina: ft.Page, usuario: Maestro):
-
-    controles = ft.Container(
-        content = ft.Column(
-            [
-
-            ft.Text (
-                "Notificaciones (Sección 3):",
-                color = PURPLE,
-                size = 16,
-                italic = True,
-                weight = "bold"
-            ),
-
-            ft.ElevatedButton(
-                ft.Text(
-                    "Cambio de Aula",
-                    size = 14,
-                ),
-                style = ft.ButtonStyle(
-                    bgcolor = CARD,
-                    side = ft.BorderSide(2, ft.Colors.BLUE_300)
-                ),
-                width = float("inf"),
-                expand = True,
-                on_click = lambda x: None
-            ),
-
-    ft.ElevatedButton(
-        ft.Text(
-            "Solicitud de aula especian pendiente",
-            size=14,
-        ),
-        style=ft.ButtonStyle(
-            bgcolor=CARD,
-            side=ft.BorderSide(2, ft.Colors.BLUE_300)
-        ),
-        width=float("inf"),
-        expand=True,
-        on_click=lambda x: None
-    )
-                ]
-        )
-    )
-
-    return controles
-
-def disponibilidad_maestro(pagina: ft.Page, usuario:Maestro):
 
     header = ft.Container(
         content = ft.Row(
-            [
-                ft.IconButton(
-                    ft.Icons.ARROW_BACK_OUTLINED,
-                    icon_color = ft.Colors.GREY_500,
-                    icon_size = 40,
-                    on_click = lambda event: (pagina.views.pop(), pagina.update())
-                ),
+            controls = [
+                ft.IconButton(ft.Icons.ARROW_BACK_OUTLINED,
+                              icon_color = PURPLE_MIDNIGHT,
+                              icon_size = 64,
+                              on_click = lambda event: (pagina.views.pop(), pagina.update())
+                              ),
 
-                ft.Container(
-                    content = ft.Text(
-                        "Disponibilidad",
-                        size = 30,
-                        color = TEXT,
-                        italic = True,
-                        weight = "bold"
-                    ),
-                    alignment = ft.Alignment.CENTER
-                )
-            ],
+                ft.Container(content = ft.Text("Informacion materia",
+                                               color = TEXT,
+                                               size = 36,
+                                               italic = True,
+                                               weight = ft.FontWeight.W_400),
+                             alignment = ft.Alignment.TOP_CENTER,
+                             expand = True,
+                             padding = ft.Padding.all(10)
+                            ),
+            ]
         ),
-        alignment = ft.Alignment.TOP_CENTER,
         bgcolor = CARD,
-        expand = True,
     )
 
-    disponibilidad = [[0]*7 for _ in range(7)]
-    tabla_disponibilidad = ft.Container(
-        content = ft.DataTable(
-            columns = [
-                
+    boton_descargar_pdf = ft.Button(
+        content=ft.Text("Descargar lista en PDF",
+                        color=TEXT_SECONDARY,
+                        size=16,
+                        weight=ft.FontWeight.BOLD,
+                        italic=True),
+
+        style=ft.ButtonStyle(
+            bgcolor={
+                ft.ControlState.HOVERED: TEXT_SECONDARY,
+                ft.ControlState.DEFAULT: CARD,
+            },
+            shape=ft.BeveledRectangleBorder(radius=5),
+            side=ft.BorderSide(width=2, color=TEXT_SECONDARY),
+        ),
+        on_click=lambda event: generar_pdf(pagina, alumnos)
+
+    )
+
+    cuerpo_materia = ft.Container(
+        content = ft.Column(
+            controls = [
+                ft.Text(f"Materia: {materia.obtener_nombre()}",
+                        color = TEXT,
+                        size = 24,
+                        weight = ft.FontWeight.W_600),
+                ft.Text(f"Horario: {materia.hora_inicio} - {materia.hora_fin}",
+                        color = TEXT,
+                        size = 24,
+                        weight = ft.FontWeight.W_400),
+                ft.Text(f"Dias: ".join(materia.obtener_dias_clase()) if materia.obtener_dias_clase() else "No hay dias clase regristrado",
+                        color = TEXT,
+                        size = 24,
+                        weight = ft.FontWeight.W_400),
+                ft.Text(f"Aula: {materia.obtener_aula()} | Edificio {materia.edificio}",
+                        color = TEXT,
+                        size = 24,
+                        weight = ft.FontWeight.W_400),
+                ft.Text(f"Cupos: {materia.obtenerCuposDisponibles()} / {materia.cupos_totales}",
+                        color=TEXT,
+                        size=24,
+                        weight=ft.FontWeight.W_400
+                        )
+            ],
+        ),
+        bgcolor = CARD,
+        border = ft.Border.all(4, PURPLE),
+        padding = ft.Padding.all(10),
+    )
+
+    cuerpo_alumnos = None
+
+    if not materia.obtener_alumnos():
+        cuerpo_alumnos = ft.Container(
+            content = ft.Text(
+                "No hay alumnos inscritos en esta materia",
+                color = TEXT,
+                size = 36,
+                weight = ft.FontWeight.BOLD,
+                italic = True
+            ),
+            bgcolor = CARD,
+            padding = ft.Padding.all(10),
+            border = ft.Border.all(4, TEXT_SECONDARY),
+        )
+    else :
+        cuerpo_alumnos = ft.Column(
+            controls = [
+                ft.DataTable(
+                    columns=[
+                        ft.DataColumn(
+                            ft.Text("No.",
+                                    color=TEXT,
+                                    weight=ft.FontWeight.BOLD,
+                                    size=16)
+                        ),
+
+                        ft.DataColumn(
+                            ft.Text("Nombre",
+                                    color=TEXT,
+                                    weight=ft.FontWeight.BOLD,
+                                    size=16)
+                        ),
+
+                        ft.DataColumn(
+                            ft.Text("Codigo",
+                                    color=TEXT,
+                                    weight=ft.FontWeight.BOLD,
+                                    size=16)
+                        )
+                    ],
+
+                    rows=[
+                        ft.DataRow(
+                            cells=[
+                                ft.DataCell(
+                                    ft.Text(f"{index}",
+                                            color=TEXT_SECONDARY,
+                                            size=16)
+                                ),
+                                ft.DataCell(
+                                    ft.Text(f"{alumno.obtenerNombre()}",
+                                            color=TEXT_SECONDARY,
+                                            size=16)
+                                ),
+                                ft.DataCell(
+                                    ft.Text(f"{alumno.obtenerIdentificacion()}",
+                                            color=TEXT_SECONDARY,
+                                            size=16)
+                                )
+                            ]
+                        ) for index, alumno in enumerate(alumnos)
+                    ],
+                    border=ft.Border.all(4, PURPLE),
+                    border_radius=10,
+                    divider_thickness=10,
+                    data_row_max_height=50,
+                    data_row_min_height=40,
+                    heading_row_height=50,
+                    heading_row_color=PURPLE_MIDNIGHT
+                ),
+
+                boton_descargar_pdf
+
             ]
         )
 
+    def generar_pdf(pagina: ft.Page, alumnos:list[Alumno]):  # <--- Le pasamos 'materia' para extraer los alumnos reales
+        # 1. Extraemos el tiempo con precisión desde la instancia real
+        dia_actual = datetime.now()
+
+        fecha = Fecha()
+        fecha.ponerDia(dia_actual.day)  # Usamos dia_actual, no la clase pura
+        fecha.ponerMes(dia_actual.month)  # ¡Sin comas al final, guapo!
+        fecha.ponerAño(dia_actual.year)
+
+        meses = [
+            "", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        ]
+        mes_actual = meses[fecha.obtenerMes()]
+        _, dias_totales = calendar.monthrange(dia_actual.year, dia_actual.month)
+
+        # 2. Definimos la estructura interna del PDF
+        class PDF(FPDF):
+            def header(self):
+                self.set_font("Arial", "B", 12)  # 'B' para que se vea imponente
+                self.set_text_color(255, 255, 255)  # Letras blancas radiantes
+                self.set_fill_color(0, 0, 0)  # Fondo negro absoluto (¡sin coma!)
+                self.cell(0, 12, f"LISTA DE ASISTENCIA ({mes_actual} {fecha.obtenerAño()})", ln=True, align="C",
+                          fill=True)
+                self.ln(10)
+
+        # 3. Instanciamos el lienzo
+        pdf = PDF(orientation="L", unit="mm", format="A4")
+        pdf.add_page()
+
+        # --- ENCABEZADOS DE LA TABLA ---
+        pdf.set_font("Arial", "B", 10)
+        pdf.set_fill_color(30, 41, 59)  # Un gris/azul oscuro muy elegante para los títulos
+        pdf.set_text_color(255, 255, 255)  # Letras blancas para contrastar el título de la tabla
+
+        # Celda para el nombre
+        pdf.cell(50, 8, "Nombre del Alumno", border=1, align="C", fill=True)
+
+        # Celdas para los días
+        ancho_celda_dia = 220 / dias_totales
+        for dia in range(1, dias_totales + 1):
+            pdf.cell(ancho_celda_dia, 8, str(dia), border=1, align="C", fill=True)
+        pdf.ln()
+
+        # --- CUERPO DE ALUMNOS (LOS DATOS REALES) ---
+        pdf.set_font("Arial", "", 10)
+        pdf.set_text_color(0, 0, 0)  # Volvemos al texto negro para los datos de los alumnos
+
+
+
+        for alumno in alumnos:
+                # Imprimimos el nombre con un borde limpio (1 suele ser el estándar)
+            pdf.cell(50, 8, str(alumno.obtenerNombre()), border=1, align="L")
+
+                # Creamos las casillas vacías para que el maestro marque la asistencia
+            for _ in range(1, dias_totales + 1):
+                pdf.cell(ancho_celda_dia, 8, "", border=1, align="C")
+
+            pdf.ln()
+
+
+
+
+        pdf.output(generar_ruta()/f"Lista {materia.obtener_nombre()}")
+        print("¡Oh, sí! Código ejecutado limpiamente y sin errores de sintaxis, rey.")
+
+
+    def generar_ruta():
+        """
+            Detecta el sistema operativo (incluyendo Android) y crea la carpeta
+            SIGHA en el lugar correcto para evitar errores de permisos.
+            """
+        # 1. Detectar si es Android
+        # En Android, Flet (o Kivy/BeeWare si empaquetas) define variables como 'ANDROID_ARGUMENT' o 'ANDROID_PRIVATE'
+        es_android = "ANDROID_ARGUMENT" in os.environ or "ANDROID_PRIVATE" in os.environ
+
+        sistema = platform.system().lower()
+
+        # 2. Asignar ruta base según el dispositivo
+        if es_android:
+            # En Android, NO podemos escribir en cualquier lado.
+            # 'FILESDIR' es la carpeta interna y privada de tu app en el teléfono, 100% segura y sin pedir permisos raros.
+            ruta_base = Path(os.environ.get("FILESDIR", os.getcwd()))
+
+        elif sistema == "windows":
+            ruta_base = Path(os.environ.get("USERPROFILE", ".")) / "Documents"
+
+        elif sistema == "darwin":  # macOS
+            ruta_base = Path.home() / "Downloads"
+
+        else:  # Linux de escritorio
+            ruta_base = Path.home() / "Documents"
+
+        # 3. Añadir la carpeta SIGHA
+        carpeta_sigha = ruta_base / "SIGHA"
+
+        # 4. Crear la carpeta si no existe (la primera vez)
+        # En Android creará la carpeta dentro del espacio de almacenamiento de la app
+        carpeta_sigha.mkdir(parents=True, exist_ok=True)
+
+        return carpeta_sigha
+
+
+
+
+
+
+
+
+
+
+
+    vista = ft.View(
+        [
+            header,
+            cuerpo_materia,
+            cuerpo_alumnos,
+        ],
+        bgcolor = BG,
+        vertical_alignment = ft.MainAxisAlignment.START,
+        horizontal_alignment = ft.CrossAxisAlignment.CENTER,
+        scroll = ft.ScrollMode.AUTO,
     )
 
-    build = ft.View(
+    pagina.views.append(vista)
+
+def seccion_2_Disponibilidad(pagina: ft.Page, usuario:Maestro):
+
+    disponibilidad = ft.Button(
+        content = ft.Row(
+            controls = [
+                ft.Icon(ft.Icons.CALENDAR_VIEW_MONTH_OUTLINED,
+                        size = 64,
+                        color = PRIMARY,
+                        ),
+                ft.Text("Disponibilidad",
+                        color = TEXT,
+                        size = 20,
+                        weight = ft.FontWeight.BOLD)
+
+            ],
+        ),
+        style = ft.ButtonStyle(
+                            bgcolor={
+                                ft.ControlState.HOVERED: PURPLE,
+                                ft.ControlState.DEFAULT: CARD,
+                            },
+                            shape=ft.BeveledRectangleBorder(radius=5),
+                            side=ft.BorderSide(width=2, color=SECONDARY),
+                        ),
+    )
+
+    cuerpo = ft.Column(
         controls = [
-            header,
+            ft.Text("Seccion 2: Disponibilidad Maestro",
+                    color = PURPLE,
+                    size = 16,
+                    weight = ft.FontWeight.BOLD),
+
+            ft.Container(
+                content = disponibilidad,
+                alignment = ft.Alignment.CENTER
+            )
         ]
     )
 
-    pagina.views.append(build)
-    pagina.update()
+    return cuerpo
 
-def notificaciones_maestro(pagina: ft.Page, usuario:Maestro):
-
-    def notificacion_completa(notificacion):
-
-        header_actual = crear_header()
-
-        pagina_notificacion_completa = ft.Container(
-            content = ft.Column(
-                [
-                    ft.Text(f"{notificacion.obtener_mensaje()}",
-                            size  = 36,
-                            color = TEXT,
-                            )
-                ]
-            ),
-            bgcolor = CARD,
-            alignment = ft.Alignment.CENTER,
-            margin=ft.Margin.symmetric(vertical=pagina.height * 0.25, horizontal=pagina.width * 0.25),
-        )
-
-        build = ft.View(
-            [
-                header_actual,
-                pagina_notificacion_completa
-            ],
-            padding = 12,
-            bgcolor = BG
-        )
-
-
-
-
-
-
-        pagina.views.append(build)
-        pagina.update()
-
-
-    def crear_header():
-        return ft.Container(
-            content=ft.Row(
-                [
-                    # Botón de regreso
-                    ft.IconButton(
-                        icon=ft.Icons.ARROW_BACK_OUTLINED,  # ← icon=
-                        icon_color=ft.Colors.GREY_500,
-                        icon_size=40,
-                        on_click=lambda event: (pagina.views.pop(), pagina.update()),
-                    ),
-
-                    # Texto centrado
-                    ft.Container(
-                        content=ft.Text(  # ← content=
-                            "Notificaciones",
-                            color=TEXT,
-                            size=30,
-                            italic=True,
-                            weight="bold",
-                        ),
-                        expand=True,
-                        alignment=ft.Alignment.CENTER,
-                    ),
-
-                    # Contenedor vacío para equilibrar el Row
-                    ft.Container(width=48),
-                ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-
-            bgcolor=CARD,
-            padding=ft.Padding.only(top=40, bottom=12),
-        )
+def seccion_3_Notificaciones(pagina: ft.Page, usuario:Maestro):
 
     cuerpo = ft.Container(
         content = ft.Column(
-            [
-                
-            ]
-        )
-    )
-
-
-
-
-    header = crear_header()
-
-    notificaciones = usuario.obtener_notifiaciones()
-    cuerpo = None
-
-    if not notificaciones:
-        cuerpo = ft.Container(
-            content = ft.Row(
-                controls = [
-                    ft.Icon(ft.Icons.NOTIFICATIONS_NONE,
-                            size = 106,
-                            color = PURPLE,
-                            ),
-                    ft.Text(
-                        "No tienes alertas por el momento",
-                        size = 56,
+            controls = [
+                ft.Text("Seccion 3: Mis alertas",
                         color = PURPLE,
-                        weight = "bold",
+                        size = 16,
+                        weight = ft.FontWeight.BOLD),
 
-                        )
-                ],
-                alignment = ft.MainAxisAlignment.CENTER,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                expand = True,
+                ft.Button(
+                    content = ft.Text("Cambio de Aula",
+                                      size = 24,
+                                      color = TEXT),
+                    style = ft.ButtonStyle(
+                                bgcolor={
+                                    ft.ControlState.HOVERED: SECONDARY,
+                                    ft.ControlState.DEFAULT: CARD,
+                                },
+                                shape=ft.BeveledRectangleBorder(radius=5),
+                                side = ft.BorderSide(width=2, color = PURPLE),
+                            ),
+                    on_click = lambda event: pagina_nueva_solicitud(pagina, usuario)
+                ),
+
+                ft.Button(
+                    content=ft.Text("Solicitudes pendientes",
+                                    size=24,
+                                    color=TEXT),
+                    style=ft.ButtonStyle(
+                        bgcolor={
+                            ft.ControlState.HOVERED: SECONDARY,
+                            ft.ControlState.DEFAULT: CARD,
+                        },
+                        shape=ft.BeveledRectangleBorder(radius=5),
+                        side=ft.BorderSide(width=2, color=PURPLE_MIDNIGHT),
+                    ),
+                    on_click = lambda event: pagina_respuestas()
+                )
+            ],
+            spacing = 10
+        ),
+    )
+    def crear_header (texto:str):
+        header = ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.IconButton(ft.Icons.ARROW_BACK_OUTLINED,
+                                  icon_color=PURPLE_MIDNIGHT,
+                                  icon_size=64,
+                                  on_click=lambda event: (pagina.views.pop(), pagina.update())
+                                  ),
+
+                    ft.Container(content=ft.Text(f"{texto}",
+                                                 color=TEXT,
+                                                 size=36,
+                                                 italic=True,
+                                                 weight=ft.FontWeight.W_400),
+                                 alignment=ft.Alignment.TOP_CENTER,
+                                 expand=True,
+                                 padding=ft.Padding.all(10)
+                                 ),
+                ]
             ),
-            alignment = ft.Alignment.CENTER,
-            bgcolor = CARD,
-            border = ft.Border.all(2, BORDER)
-
+            bgcolor=CARD,
         )
 
+    def pagina_nueva_solicitud(pagina: ft.Page, usuario:Maestro):
+        header = crear_header("Solicitud cambio de Aula")
 
-    else:
+        cuadro_texto = ft.TextField(
+                        label = ft.Text("Ingrese su solicitud",
+                                        color = TEXT_SECONDARY,
+                                        size = 16),
+                        max_lines = 8,
+                        max_length = 200,
+                        bgcolor = CARD,
+                        border_color = SECONDARY,
+                        border_radius = 2
+                    )
+
         cuerpo = ft.Container(
             content = ft.Column(
                 controls = [
-                    ft.Container(
-                        content = ft.Row(
-                            [ft.Icon(ft.Icons.CIRCLE_NOTIFICATIONS,
-                                    size = 36,
-                                    color = PURPLE,
-                                    ),
-                            ft.Button(
-                                ft.Text(f"{notificacion.obtener_mensaje()[:15]} . . .",
-                                size = 24,
-                                color = PURPLE),
-                                bgcolor = CARD,
-                                expand = True,
-                                on_click = lambda event:notificacion_completa(notificacion),
-                            )
+                    cuadro_texto,
 
-                            ],
-                            alignment = ft.Alignment.CENTER_LEFT,
+                    ft.Button(
+                        content=ft.Text("Enviar",
+                                        size=24,
+                                        color=TEXT),
+                        style=ft.ButtonStyle(
+                            bgcolor={
+                                ft.ControlState.HOVERED: SECONDARY,
+                                ft.ControlState.DEFAULT: CARD,
+                            },
+                            shape=ft.BeveledRectangleBorder(radius=5),
+                            side=ft.BorderSide(width=2, color=SECONDARY),
                         ),
+                        on_click = lambda event: continuar()
+
+                    )
+
+                ],
+            ),
+            alignment = ft.Alignment.CENTER
+        )
+        def continuar():
+            if cuadro_texto.value:
+                peticion = Alerta(mensaje=cuadro_texto.value)
+                usuario.agregar_peticion(peticion)
+                cuadro_texto.error = None
+                cuadro_texto.value = None
+                pagina.show_dialog(snackBar)
+
+            else:
+                cuadro_texto.error = "Ingrese una peticion valida"
+
+
+            pagina.update()
+
+
+        snackBar = ft.SnackBar(
+            content = ft.Text("Se a enviado con exito",
+                              color = TEXT_SECONDARY,
+                              size = 12,
+                              weight = ft.FontWeight.BOLD),
+            duration = 3000,
+            bgcolor = CARD,
+            visible = True
+        )
+
+        vista = ft.View(
+            controls = [
+                header,
+                cuerpo
+            ],
+            padding = 10,
+            bgcolor = BG,
+        )
+        pagina.views.append(vista)
+
+    def pagina_respuestas():
+        header = crear_header("Solicitudes pendientes")
+        cuerpo = None
+
+        if not usuario.obtener_alertas():
+            cuerpo = ft.Container(
+                content = ft.Text(
+                    "No tienes respuestas",
+                    color = TEXT,
+                    size = 36,
+                    weight = ft.FontWeight.BOLD,
+                    italic = True,
+                ),
+                bgcolor = CARD,
+                padding = ft.Padding.all(10),
+                border = ft.Border.all(4 ,color = PURPLE),
+                alignment = ft.Alignment.CENTER
+            )
+
+        else:
+            cuerpo = ft.Column(
+                controls = [
+                    ft.Button(
+                        content = ft.Text(f"{alerta.obtener_mensaje()[0:20]}",
+                                          color = TEXT_SECONDARY,
+                                          size = 16
+                                          ),
+                        style = ft.ButtonStyle(
+                            bgcolor={
+                                ft.ControlState.HOVERED: SECONDARY,
+                                ft.ControlState.DEFAULT: CARD,
+                            },
+                            shape=ft.BeveledRectangleBorder(radius=5),
+                            side=ft.BorderSide(width=2, color=PRIMARY),
+                        ),
+                        on_click=lambda event: alerta_completa(alerta)
+
+                    )for alerta in usuario.obtener_alertas()
+                ]
+
+            )
+
+            def alerta_completa(alerta:Alerta):
+                header = crear_header("Respuesta")
+
+                cuerpo = ft.Container(
+                    content = ft.TextField(
+                        value = f"{alerta.obtener_mensaje()}",
+                        max_lines=8,
                         bgcolor=CARD,
-                        border=ft.Border.all(2, BORDER),
+                        border_color=PURPLE_MIDNIGHT,
+                        border_radius=2,
+                        read_only = True
 
-                    )for notificacion in notificaciones
-
-
-
-                ],
-                alignment = ft.MainAxisAlignment.SPACE_BETWEEN,
-                spacing = 24,
-                expand = True,
-
-            ),
-            alignment = ft.Alignment.CENTER,
-            margin = ft.Margin.symmetric(vertical = pagina.height * 0.25, horizontal = pagina.width * 0.25),
-
-        )
-
-    build = ft.View(
-        [
-            header,
-            cuerpo
-        ],
-        bgcolor = BG,
-        spacing = 50
-
-
-    )
-
-    pagina.views.append(build)
-    pagina.update()
-
-def perfil_maestro(pagina:ft.Page, usuario:Maestro):
-    def crear_header():
-        return ft.Container(
-            content=ft.Row(
-                [
-                    # Botón de regreso
-                    ft.IconButton(
-                        icon=ft.Icons.ARROW_BACK_OUTLINED,  # ← icon=
-                        icon_color=ft.Colors.GREY_500,
-                        icon_size=40,
-                        on_click=lambda event: (pagina.views.pop(), pagina.update()),
                     ),
 
-                    # Texto centrado
-                    ft.Container(
-                        content=ft.Text(  # ← content=
-                            "Perfil",
-                            color=TEXT,
-                            size=30,
-                            italic=True,
-                            weight="bold",
-                        ),
-                        expand=True,
-                        alignment=ft.Alignment.CENTER,
-                    ),
+                    alignment = ft.Alignment.CENTER,
+                )
 
-                    # Contenedor vacío para equilibrar el Row
-                    ft.Container(width=48),
-                ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
+                vista = ft.View(
+                    controls = [
+                        header,
+                        cuerpo
+                    ],
+                    bgcolor = BG,
+                )
 
-            bgcolor=CARD,
-            padding=ft.Padding.only(top=40, bottom=12),
+                alerta.poner_visto(True)
+                usuario.depurar_alertas()
+                pagina.views.append(vista)
+
+
+
+        vista = ft.View(
+            controls = [
+                header,
+                cuerpo
+            ],
+            scroll = ft.ScrollMode.AUTO,
+            bgcolor = BG
         )
 
-    header = crear_header()
+        pagina.views.append(vista)
+
+    return cuerpo
 
 
-    build = ft.View(
-        [
-            header,
-        ],
-        padding = 20,
-        bgcolor = BG,
 
-    )
 
-    pagina.views.append(build)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
