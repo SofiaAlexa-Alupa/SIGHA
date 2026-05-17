@@ -56,19 +56,35 @@ def crear_alumno_desde_bd(estudiante_id):
 
 def obtener_materias_desde_bd():
     """Obtiene todas las materias de la BD y las convierte a objetos Materia"""
+    from hora import Hora
+    
     session = SessionLocal()
     try:
-        
         materias_db = session.query(Materia).all()
         materias = []
         
         for m in materias_db:
+            # Crear objeto Materia con todos los parámetros que acepta
             materia = Materia(
                 identificacion=str(m.id),
                 codigo=m.codigo,
                 nombre=m.nombre,
                 creditos=m.creditos,
-                facultad=m.facultad
+                facultad=m.facultad,
+                promedio=0,
+                aula=0,
+                edificio="",
+                dias_clase=[],
+                alumnos=[],
+                modalidad="Presencial",
+                prerequisitos=[],
+                profesor_nombre="Sin asignar",
+                profesor_correo="correo@udg.mx",
+                seccion_nombre="A00",
+                cupos_totales=40,
+                cupos_disponibles=40,
+                hora_inicio=Hora(8, 0),
+                hora_fin=Hora(10, 0)
             )
             materias.append(materia)
         
