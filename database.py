@@ -604,9 +604,7 @@ if __name__ == "__main__":
  
 # ==============================================================================================================
 
-
-    
-    # Prueba de conexión con la BD de tu compañera
+    # Prueba de conexión con la BD
     session = SessionLocal()
     try:
         print("\n" + "="*50)
@@ -630,11 +628,7 @@ if __name__ == "__main__":
         
         if usuarios > 0:
             print("\n✅ La base de datos tiene datos. Todo funciona correctamente.")
-            print("\n📋 Ejemplo de usuario:")
-            usuario = session.query(Usuario).first()
-            print(f"   ID: {usuario.id}")
-            print(f"   Nombre: {usuario.nombre} {usuario.apellido_paterno}")
-            print(f"   Email: {usuario.email}")
+           
         else:
             print("\n⚠️ La base de datos no tiene datos. ¿Tu compañera insertó los registros?")
             
