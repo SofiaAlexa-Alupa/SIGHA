@@ -2,11 +2,7 @@ from pathlib import Path
 
 import flet as ft
 from datetime import datetime
-
 import calendar
-
-from flet.controls import alignment
-
 from fecha import Fecha
 from alertas import Alerta
 from hora import Hora
@@ -228,6 +224,10 @@ def seccion_1_maestro(pagina: ft.Page, usuario:Maestro):
     materia_actual= Materia()
     materia_siguiente = Materia()
 
+    alumno = Alumno()
+
+    for i in range(0, 100):
+        materia_actual.agregar_alumno(alumno)
     boton_materia_actual = None
     boton_materia_siguiente = None
 
@@ -597,12 +597,8 @@ def mostrar_informacion_materia_maestro(pagina:ft.Page, materia:Materia):
 
             pdf.ln()
 
-
-
-
-        pdf.output(generar_ruta()/f"Lista {materia.obtener_nombre()}")
-        print("¡Oh, sí! Código ejecutado limpiamente y sin errores de sintaxis, rey.")
-
+        ruta_final = generar_ruta() / f"Lista_{materia.obtener_nombre()}.pdf"
+        pdf.output(str(ruta_final))
 
     def generar_ruta():
         """
