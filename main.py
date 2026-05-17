@@ -97,7 +97,6 @@ def obtener_alumnos_desde_bd():
     """Obtiene todos los alumnos de la BD"""
     session = SessionLocal()
     try:
-        
         estudiantes_db = session.query(Estudiante).all()
         alumnos = []
         
