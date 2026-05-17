@@ -64,7 +64,7 @@ def obtener_materias_desde_bd():
         materias = []
         
         for m in materias_db:
-            # Crear objeto Materia con todos los parámetros que acepta
+            # Crear objeto Materia con TODOS los parámetros que espera
             materia = Materia(
                 identificacion=str(m.id),
                 codigo=m.codigo,
