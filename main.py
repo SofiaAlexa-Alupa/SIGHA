@@ -86,7 +86,7 @@ def obtener_materias_desde_bd():
             )
             materias.append(materia)
         
-        print(f"✅ Cargadas {len(materias)} materias desde la BD")
+        print(f" Cargadas {len(materias)} materias desde la BD")
         return materias
     finally:
         session.close()
@@ -104,7 +104,7 @@ def obtener_alumnos_desde_bd():
             if alumno:
                 alumnos.append(alumno)
         
-        print(f"✅ Cargados {len(alumnos)} alumnos desde la BD")
+        print(f"Cargados {len(alumnos)} alumnos desde la BD")
         return alumnos
     finally:
         session.close()
@@ -133,7 +133,7 @@ def obtener_maestros_desde_bd():
             
             maestros.append(maestro)
         
-        print(f"✅ Cargados {len(maestros)} maestros desde la BD")
+        print(f" Cargados {len(maestros)} maestros desde la BD")
         return maestros
     finally:
         session.close()
@@ -148,7 +148,7 @@ def main(pagina: ft.Page):
     pagina.padding = 5
     pagina.bgcolor = "#0f172a"
 
-    print("🔄 Cargando datos desde la base de datos...")
+    print(" Cargando datos desde la base de datos...")
     
     db_materias = obtener_materias_desde_bd()
     db_alumnos = obtener_alumnos_desde_bd()
@@ -156,14 +156,14 @@ def main(pagina: ft.Page):
     
     if db_alumnos:
         usuario = db_alumnos[0]
-        print(f"👤 Usuario cargado: {usuario.nombre} (Alumno)")
+        print(f" Usuario cargado: {usuario.nombre} (Alumno)")
         interfaz.interfaz_alumno(pagina, usuario, db_materias)
     elif db_maestros:
         usuario = db_maestros[0]
-        print(f"👤 Usuario cargado: {usuario.nombre} (Maestro)")
+        print(f" Usuario cargado: {usuario.nombre} (Maestro)")
         interfaz.interfaz_maestro(pagina, usuario)
     else:
-        print("❌ No hay usuarios en la BD")
+        print(" No hay usuarios en la BD")
         pagina.add(ft.Text("No hay datos en la base de datos", color="red"))
 
 
