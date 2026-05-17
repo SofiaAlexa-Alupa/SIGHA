@@ -11,15 +11,15 @@ from maestro import Maestro
 from materia import Materia
 from nombre import Nombre
 
-# IMPORTAR BASE DE DATOS 
-from database import SessionLocal, EstudianteDB, ProfesorDB, MateriaDB
+#  IMPORTAR BASE DE DATOS 
+from database import SessionLocal, Estudiante, Profesor, Materia
 
-#  FUNCIONES PARA CONVERTIR DE BD A OBJETOS 
+#  FUNCIONES PARA CONVERTIR DE BD A OBJETOS
 def crear_alumno_desde_bd(estudiante_id):
     """Convierte un registro de BD a objeto Alumno (el que usa la interfaz)"""
     session = SessionLocal()
     try:
-        estudiante_db = session.query(EstudianteDB).filter(EstudianteDB.usuario_id == estudiante_id).first()
+        estudiante_db = session.query(Estudiante).filter(Estudiante.usuario_id == estudiante_id).first()
         if not estudiante_db:
             return None
         
@@ -58,7 +58,8 @@ def obtener_materias_desde_bd():
     """Obtiene todas las materias de la BD y las convierte a objetos Materia"""
     session = SessionLocal()
     try:
-        materias_db = session.query(MateriaDB).all()
+        
+        materias_db = session.query(Materia).all()
         materias = []
         
         for m in materias_db:
@@ -80,7 +81,8 @@ def obtener_alumnos_desde_bd():
     """Obtiene todos los alumnos de la BD"""
     session = SessionLocal()
     try:
-        estudiantes_db = session.query(EstudianteDB).all()
+        
+        estudiantes_db = session.query(Estudiante).all()
         alumnos = []
         
         for e in estudiantes_db:
@@ -97,7 +99,8 @@ def obtener_maestros_desde_bd():
     """Obtiene todos los maestros de la BD"""
     session = SessionLocal()
     try:
-        profesores_db = session.query(ProfesorDB).all()
+        
+        profesores_db = session.query(Profesor).all()
         maestros = []
         
         for p in profesores_db:
@@ -122,8 +125,7 @@ def obtener_maestros_desde_bd():
         session.close()
 
 
-
-# FUNCIÓN PRINCIPAL 
+# FUNCIÓN PRINCIPAL
 
 def main(pagina: ft.Page):
     pagina.title = "SIGHA"
