@@ -180,6 +180,8 @@ def interfaz_maestro_nueva(pagina: ft.Page, usuario: Maestro):
             vistas_manager.content = pagina_materias(pagina, usuario)
         elif opcion == 2:
             vistas_manager.content = pagina_notificaciones(pagina, usuario)
+        elif opcion == 3:
+            vistas_manager.content = pagina_perfil(pagina, usuario)
 
 
         vistas_manager.update()
@@ -195,16 +197,24 @@ def interfaz_maestro_nueva(pagina: ft.Page, usuario: Maestro):
 
         destinations = [
             ft.NavigationBarDestination(
-                icon = ft.Icons.HOME,
+                icon =  ft.Icons.HOME_OUTLINED,
+                selected_icon = ft.Icons.HOME,
                 label = "Inicio"
             ),
             ft.NavigationBarDestination(
-                icon = ft.Icons.CALENDAR_MONTH_ROUNDED,
+                icon = ft.Icons.CALENDAR_MONTH_OUTLINED,
+                selected_icon = ft.Icons.CALENDAR_MONTH,
                 label = "Materias"
             ),
             ft.NavigationBarDestination(
-                icon = ft.Icons.DOORBELL,
+                icon = ft.Icons.NOTIFICATIONS_OUTLINED,
+                selected_icon = ft.Icons.NOTIFICATIONS,
                 label = "Notificaciones"
+            ),
+            ft.NavigationBarDestination(
+                icon = ft.Icons.PERSON_OUTLINE,
+                selected_icon = ft.Icons.PERSON,
+                label = "Perfil"
             )
 
         ]
@@ -1294,25 +1304,43 @@ def pagina_perfil(pagina, usuario:Maestro):
                 
                 ft.Text(f"Nombre: {usuario.obtenerNombre()}",
                         color = TEXT,
-                        size = 16),
-                ft.Text(f"Identificacion {usuario.obtenerIdentificacion()}",
+                        size = 24),
+
+                ft.Text(f"{usuario.obtener_departamento()}",
+                        color=TEXT_SECONDARY,
+                        size=20),
+
+                ft.Text(f"Codigo: {usuario.obtenerIdentificacion()}",
                         color=TEXT,
-                        size=16),
+                        size=24),
                 ft.Text(f"Correo: {usuario.obtenerCorreo()}",
                         color=TEXT,
-                        size=16),
-                ft.Text(f"{usuario.obtenerNombre()}",
-                        color=TEXT,
-                        size=16),
-                ft.Text(f"{usuario.obtenerNombre()}",
-                        color=TEXT,
-                        size=16),
+                        size=24),
+
                 ft.Text(f"Carga horaria: {carga_horaria}",
                         color=TEXT,
-                        size=16)
-            ]
-        )
+                        size=24)
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            tight = True
+        ),
+        bgcolor = CARD,
+        padding = 24,
+        border_radius = 12,
     )
+
+    build = ft.Container(
+        content = ft.Column(
+            controls = [
+                header,
+                cuerpo
+            ],
+            spacing = 12,
+            horizontal_alignment = ft.CrossAxisAlignment.CENTER,
+        ),
+    )
+
+    return build
 
 
 
