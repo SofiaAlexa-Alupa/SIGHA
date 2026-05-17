@@ -46,7 +46,7 @@ def crear_alumno_desde_bd(estudiante_id):
         alumno.contraseña = usuario_db.password
         alumno.rol = usuario_db.rol
         alumno.estado = usuario_db.estado
-        alumno.fecha_creacion = usuario_db.fecha_creacion
+        #alumno.fecha_creacion = usuario_db.fecha_creacion
         
         return alumno
     finally:
