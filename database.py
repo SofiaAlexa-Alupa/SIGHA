@@ -69,7 +69,7 @@ class Administrador(Base):
 
 #  MATERIAS, AULAS Y SECCIONES 
 
-class Materia(Base):
+class MateriaDB(Base):
     """Materia académica"""
     __tablename__ = 'materias'
     
@@ -80,7 +80,6 @@ class Materia(Base):
     facultad = Column(String(100), nullable=False)
     
     secciones = relationship("Seccion", back_populates="materia")
-
 
 class Aula(Base):
     """Aula física donde se imparten clases"""
@@ -111,6 +110,7 @@ class Seccion(Base):
     
     # Claves foráneas
     materia_id = Column(Integer, ForeignKey('materias.id'), nullable=False)
+    materia = relationship("MateriaDB", back_populates="secciones")
     profesor_id = Column(Integer, ForeignKey('profesores.usuario_id'), nullable=False)
     aula_id = Column(Integer, ForeignKey('aulas.id'), nullable=False)
     
