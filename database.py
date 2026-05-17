@@ -7,7 +7,7 @@ Base = declarative_base()
 engine = create_engine('sqlite:///sigha.db', echo=True)
 SessionLocal = sessionmaker(bind=engine)
 
-# USUARIOS 
+#  USUARIOS 
 
 class Usuario(Base):
     __tablename__ = 'usuarios'
@@ -19,7 +19,7 @@ class Usuario(Base):
     apellido_materno = Column(String(50), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
-    rol = Column(String(20), nullable=False)  # 'estudiante', 'profesor', 'administrador'
+    rol = Column(String(20), nullable=False)
     estado = Column(String(20), default='ACTIVO')
     fecha_creacion = Column(Date, nullable=False)
     
@@ -30,7 +30,6 @@ class Usuario(Base):
 
 
 class Estudiante(Base):
-    """Estudiante - hereda de Usuario"""
     __tablename__ = 'estudiantes'
     
     usuario_id = Column(Integer, ForeignKey('usuarios.id'), primary_key=True)
@@ -40,7 +39,6 @@ class Estudiante(Base):
     creditos_totales = Column(Integer, default=0)
     promedio_general = Column(Float, default=0.0)
     
-    # Relaciones
     usuario = relationship("Usuario", back_populates="estudiante")
     alertas = relationship("Alerta", back_populates="estudiante")
     notificaciones = relationship("Notificacion", back_populates="estudiante")
@@ -48,7 +46,6 @@ class Estudiante(Base):
 
 
 class Profesor(Base):
-    """Profesor - hereda de Usuario"""
     __tablename__ = 'profesores'
     
     usuario_id = Column(Integer, ForeignKey('usuarios.id'), primary_key=True)
@@ -59,7 +56,6 @@ class Profesor(Base):
 
 
 class Administrador(Base):
-    """Administrador - hereda de Usuario"""
     __tablename__ = 'administradores'
     
     usuario_id = Column(Integer, ForeignKey('usuarios.id'), primary_key=True)
@@ -70,7 +66,7 @@ class Administrador(Base):
 #  MATERIAS, AULAS Y SECCIONES 
 
 class MateriaDB(Base):
-    """Materia académica"""
+    """Materia académica - versión de base de datos"""
     __tablename__ = 'materias'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -81,8 +77,8 @@ class MateriaDB(Base):
     
     secciones = relationship("Seccion", back_populates="materia")
 
+
 class Aula(Base):
-    """Aula física donde se imparten clases"""
     __tablename__ = 'aulas'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -95,12 +91,11 @@ class Aula(Base):
 
 
 class Seccion(Base):
-    """Sección de una materia (grupo con horario, aula, profesor)"""
     __tablename__ = 'secciones'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     codigo_seccion = Column(String(10), nullable=False)
-    dias = Column(String(50), nullable=False)  # Ej: "LUN,MIE,VIE"
+    dias = Column(String(50), nullable=False)
     hora_inicio = Column(Time, nullable=False)
     hora_fin = Column(Time, nullable=False)
     fecha_inicio = Column(Date, nullable=False)
@@ -108,14 +103,11 @@ class Seccion(Base):
     cupos_totales = Column(Integer, nullable=False)
     cupos_disponibles = Column(Integer, nullable=False)
     
-    # Claves foráneas
     materia_id = Column(Integer, ForeignKey('materias.id'), nullable=False)
-    materia = relationship("MateriaDB", back_populates="secciones")
     profesor_id = Column(Integer, ForeignKey('profesores.usuario_id'), nullable=False)
     aula_id = Column(Integer, ForeignKey('aulas.id'), nullable=False)
     
-    # Relaciones
-    materia = relationship("Materia", back_populates="secciones")
+    materia = relationship("MateriaDB", back_populates="secciones")
     profesor = relationship("Profesor", back_populates="secciones")
     aula = relationship("Aula", back_populates="secciones")
     alertas = relationship("Alerta", back_populates="seccion")
@@ -123,29 +115,25 @@ class Seccion(Base):
     inscripciones = relationship("Inscripcion", back_populates="seccion")
 
 
-# INSCRIPCIONES (KARDEX)
+#  INSCRIPCIONES 
 
 class Inscripcion(Base):
-    """Registro de un estudiante en una sección (para kardex)"""
     __tablename__ = 'inscripciones'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     estudiante_id = Column(Integer, ForeignKey('estudiantes.usuario_id'), nullable=False)
     seccion_id = Column(Integer, ForeignKey('secciones.id'), nullable=False)
-    periodo = Column(String(10), nullable=False)  # Ej: "2024A", "2024B"
-    calificacion = Column(Float, default=0.0)  # 0-100
-    estado = Column(String(20), default='CURSANDO')  # CURSANDO, APROBADA, REPROBADA
+    periodo = Column(String(10), nullable=False)
+    calificacion = Column(Float, default=0.0)
+    estado = Column(String(20), default='CURSANDO')
     fecha_inscripcion = Column(Date, default=date.today)
     
-    # Relaciones
     estudiante = relationship("Estudiante", back_populates="inscripciones")
     seccion = relationship("Seccion", back_populates="inscripciones")
 
 
-# ALERTAS Y NOTIFICACIONES 
-
+#  ALERTAS Y NOTIFICACIONES 
 class Alerta(Base):
-    """Alerta que un estudiante activa para una sección"""
     __tablename__ = 'alertas'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -161,7 +149,6 @@ class Alerta(Base):
 
 
 class Notificacion(Base):
-    """Notificación enviada cuando se libera un cupo"""
     __tablename__ = 'notificaciones'
     
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -178,17 +165,15 @@ class Notificacion(Base):
     seccion = relationship("Seccion", back_populates="notificaciones")
 
 
-# CLASE DE GESTIÓN (CRUD + KARDEX) 
+#  GESTIÓN BD 
 
 class GestionBD:
-    """Clase auxiliar para todas las operaciones de base de datos"""
     
     @staticmethod
     def get_session():
         return SessionLocal()
     
-    #  USUARIOS 
-    
+    # USUARIOS
     @staticmethod
     def crear_usuario(data):
         session = SessionLocal()
@@ -216,8 +201,7 @@ class GestionBD:
         finally:
             session.close()
     
-    # ESTUDIANTES 
-    
+    # ESTUDIANTES
     @staticmethod
     def crear_estudiante(usuario_data, estudiante_data):
         session = SessionLocal()
@@ -225,7 +209,6 @@ class GestionBD:
             usuario = Usuario(**usuario_data)
             session.add(usuario)
             session.flush()
-            
             estudiante = Estudiante(usuario_id=usuario.id, **estudiante_data)
             session.add(estudiante)
             session.commit()
@@ -249,13 +232,12 @@ class GestionBD:
         finally:
             session.close()
     
-    #  MATERIAS 
-    
+    # MATERIAS 
     @staticmethod
     def crear_materia(data):
         session = SessionLocal()
         try:
-            materia = Materia(**data)
+            materia = MateriaDB(**data)
             session.add(materia)
             session.commit()
             return materia
@@ -266,7 +248,7 @@ class GestionBD:
     def obtener_materias():
         session = SessionLocal()
         try:
-            return session.query(Materia).all()
+            return session.query(MateriaDB).all()
         finally:
             session.close()
     
@@ -274,12 +256,11 @@ class GestionBD:
     def obtener_materia_por_id(id):
         session = SessionLocal()
         try:
-            return session.query(Materia).filter(Materia.id == id).first()
+            return session.query(MateriaDB).filter(MateriaDB.id == id).first()
         finally:
             session.close()
     
-    # SECCIONES 
-    
+    # SECCIONES
     @staticmethod
     def crear_seccion(data):
         session = SessionLocal()
@@ -307,14 +288,11 @@ class GestionBD:
         finally:
             session.close()
     
-    # ========== INSCRIPCIONES (KARDEX) ==========
-    
+    # INSCRIPCIONES
     @staticmethod
     def inscribir_estudiante(estudiante_id, seccion_id, periodo):
-        """Inscribe a un estudiante en una sección"""
         session = SessionLocal()
         try:
-            # Verificar si ya está inscrito
             existe = session.query(Inscripcion).filter(
                 Inscripcion.estudiante_id == estudiante_id,
                 Inscripcion.seccion_id == seccion_id,
@@ -324,20 +302,16 @@ class GestionBD:
             if existe:
                 return None, "Ya está inscrito en esta sección"
             
-            # Verificar cupo disponible
             seccion = session.query(Seccion).filter(Seccion.id == seccion_id).first()
             if not seccion or seccion.cupos_disponibles <= 0:
                 return None, "No hay cupos disponibles"
             
-            # Crear inscripción
             inscripcion = Inscripcion(
                 estudiante_id=estudiante_id,
                 seccion_id=seccion_id,
                 periodo=periodo
             )
             session.add(inscripcion)
-            
-            # Reducir cupo
             seccion.cupos_disponibles -= 1
             session.commit()
             
@@ -347,15 +321,14 @@ class GestionBD:
     
     @staticmethod
     def obtener_kardex(estudiante_id):
-        """Obtiene todo el historial académico de un estudiante"""
         session = SessionLocal()
         try:
             resultados = session.query(
                 Inscripcion,
-                Materia,
+                MateriaDB,
                 Seccion
             ).join(Seccion, Inscripcion.seccion_id == Seccion.id
-            ).join(Materia, Seccion.materia_id == Materia.id
+            ).join(MateriaDB, Seccion.materia_id == MateriaDB.id
             ).filter(Inscripcion.estudiante_id == estudiante_id
             ).order_by(Inscripcion.periodo.desc()).all()
             
@@ -379,14 +352,13 @@ class GestionBD:
     
     @staticmethod
     def obtener_materias_cursadas(estudiante_id):
-        """Obtiene solo las materias ya cursadas (aprobadas o reprobadas)"""
         session = SessionLocal()
         try:
             resultados = session.query(
                 Inscripcion,
-                Materia
+                MateriaDB
             ).join(Seccion, Inscripcion.seccion_id == Seccion.id
-            ).join(Materia, Seccion.materia_id == Materia.id
+            ).join(MateriaDB, Seccion.materia_id == MateriaDB.id
             ).filter(
                 Inscripcion.estudiante_id == estudiante_id,
                 Inscripcion.estado.in_(['APROBADA', 'REPROBADA'])
@@ -409,15 +381,14 @@ class GestionBD:
     
     @staticmethod
     def obtener_materias_actuales(estudiante_id):
-        """Obtiene las materias que el estudiante está cursando actualmente"""
         session = SessionLocal()
         try:
             resultados = session.query(
                 Inscripcion,
-                Materia,
+                MateriaDB,
                 Seccion
             ).join(Seccion, Inscripcion.seccion_id == Seccion.id
-            ).join(Materia, Seccion.materia_id == Materia.id
+            ).join(MateriaDB, Seccion.materia_id == MateriaDB.id
             ).filter(
                 Inscripcion.estudiante_id == estudiante_id,
                 Inscripcion.estado == 'CURSANDO'
@@ -439,11 +410,9 @@ class GestionBD:
     
     @staticmethod
     def registrar_calificacion(inscripcion_id, calificacion):
-        """Registra calificación para una inscripción específica"""
         session = SessionLocal()
         try:
             inscripcion = session.query(Inscripcion).filter(Inscripcion.id == inscripcion_id).first()
-            
             if not inscripcion:
                 return None, "Inscripción no encontrada"
             
@@ -451,7 +420,6 @@ class GestionBD:
             inscripcion.estado = "APROBADA" if calificacion >= 60 else "REPROBADA"
             session.commit()
             
-            # Actualizar promedio y créditos del estudiante
             GestionBD.actualizar_promedio_estudiante(inscripcion.estudiante_id)
             
             return inscripcion, "Calificación registrada"
@@ -460,14 +428,12 @@ class GestionBD:
     
     @staticmethod
     def actualizar_promedio_estudiante(estudiante_id):
-        """Calcula y actualiza el promedio general y créditos totales del estudiante"""
         session = SessionLocal()
         try:
-            # Obtener todas las inscripciones aprobadas
             inscripciones = session.query(Inscripcion).join(
                 Seccion, Inscripcion.seccion_id == Seccion.id
             ).join(
-                Materia, Seccion.materia_id == Materia.id
+                MateriaDB, Seccion.materia_id == MateriaDB.id
             ).filter(
                 Inscripcion.estudiante_id == estudiante_id,
                 Inscripcion.estado == 'APROBADA'
@@ -486,7 +452,6 @@ class GestionBD:
             
             promedio = suma_ponderada / total_creditos if total_creditos > 0 else 0
             
-            # Actualizar estudiante
             estudiante = session.query(Estudiante).filter(Estudiante.usuario_id == estudiante_id).first()
             if estudiante:
                 estudiante.creditos_totales = total_creditos
@@ -497,7 +462,6 @@ class GestionBD:
     
     @staticmethod
     def obtener_promedio_estudiante(estudiante_id):
-        """Devuelve el promedio general del estudiante"""
         session = SessionLocal()
         try:
             estudiante = session.query(Estudiante).filter(Estudiante.usuario_id == estudiante_id).first()
@@ -507,7 +471,6 @@ class GestionBD:
     
     @staticmethod
     def obtener_creditos_obtenidos(estudiante_id):
-        """Devuelve los créditos totales obtenidos por el estudiante"""
         session = SessionLocal()
         try:
             estudiante = session.query(Estudiante).filter(Estudiante.usuario_id == estudiante_id).first()
@@ -517,7 +480,6 @@ class GestionBD:
     
     @staticmethod
     def obtener_resumen_kardex(estudiante_id):
-        """Obtiene un resumen completo del kardex (promedio, créditos, materias cursadas)"""
         session = SessionLocal()
         try:
             kardex = GestionBD.obtener_kardex(estudiante_id)
@@ -539,13 +501,11 @@ class GestionBD:
         finally:
             session.close()
     
-    #  ALERTAS 
-    
+    # ALERTAS
     @staticmethod
     def activar_alerta(estudiante_id, seccion_id):
         session = SessionLocal()
         try:
-            # Verificar si ya tiene alerta activa para esta sección
             existe = session.query(Alerta).filter(
                 Alerta.estudiante_id == estudiante_id,
                 Alerta.seccion_id == seccion_id,
@@ -590,51 +550,45 @@ class GestionBD:
 #  INICIALIZACIÓN 
 
 def inicializar_bd():
-    """Crea todas las tablas si no existen"""
     Base.metadata.create_all(bind=engine)
-    print("✅ Base de datos SIGHA inicializada correctamente")
-    print("📁 Archivo: sigha.db")
-    print("\n📋 Tablas creadas:")
+    print(" Base de datos SIGHA inicializada correctamente")
+    print(" Archivo: sigha.db")
+    print("\n Tablas creadas:")
     for table in Base.metadata.tables.keys():
         print(f"   - {table}")
 
 
 if __name__ == "__main__":
     inicializar_bd()
- 
-# ==============================================================================================================
-
-    # Prueba de conexión con la BD
+    
+    # Prueba de conexión
     session = SessionLocal()
     try:
         print("\n" + "="*50)
-        print("🔍 VERIFICANDO CONEXIÓN CON sigha.db")
+        print(" VERIFICANDO CONEXIÓN CON sigha.db")
         print("="*50)
         
-        # Contar registros en cada tabla
         usuarios = session.query(Usuario).count()
-        materias = session.query(Materia).count()
+        materias = session.query(MateriaDB).count()
         estudiantes = session.query(Estudiante).count()
         profesores = session.query(Profesor).count()
         secciones = session.query(Seccion).count()
         inscripciones = session.query(Inscripcion).count()
         
-        print(f"📊 Usuarios: {usuarios}")
-        print(f"📚 Materias: {materias}")
-        print(f"🎓 Estudiantes: {estudiantes}")
-        print(f"👨‍🏫 Profesores: {profesores}")
-        print(f"📋 Secciones: {secciones}")
-        print(f"📝 Inscripciones: {inscripciones}")
+        print(f" Usuarios: {usuarios}")
+        print(f" Materias: {materias}")
+        print(f" Estudiantes: {estudiantes}")
+        print(f" Profesores: {profesores}")
+        print(f" Secciones: {secciones}")
+        print(f" Inscripciones: {inscripciones}")
         
         if usuarios > 0:
-            print("\n✅ La base de datos tiene datos. Todo funciona correctamente.")
-           
+            print("\n La base de datos tiene datos. Todo funciona correctamente.")
         else:
-            print("\n⚠️ La base de datos no tiene datos. ¿Tu compañera insertó los registros?")
+            print("\n La base de datos no tiene datos.")
             
     except Exception as e:
-        print(f"\n❌ Error: {e}")
-        print("Posiblemente las tablas no coinciden. Revisa los nombres.")
+        print(f"\n Error: {e}")
     finally:
         session.close()
 
