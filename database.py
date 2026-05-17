@@ -7,10 +7,9 @@ Base = declarative_base()
 engine = create_engine('sqlite:///sigha.db', echo=True)
 SessionLocal = sessionmaker(bind=engine)
 
-# TABLA USUARIO (BASE) 
+# USUARIOS 
 
 class Usuario(Base):
-    """Tabla base para todos los usuarios del sistema"""
     __tablename__ = 'usuarios'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -603,7 +602,47 @@ def inicializar_bd():
 if __name__ == "__main__":
     inicializar_bd()
  
+# ==============================================================================================================
 
+
+    
+    # Prueba de conexión con la BD de tu compañera
+    session = SessionLocal()
+    try:
+        print("\n" + "="*50)
+        print("🔍 VERIFICANDO CONEXIÓN CON sigha.db")
+        print("="*50)
+        
+        # Contar registros en cada tabla
+        usuarios = session.query(Usuario).count()
+        materias = session.query(Materia).count()
+        estudiantes = session.query(Estudiante).count()
+        profesores = session.query(Profesor).count()
+        secciones = session.query(Seccion).count()
+        inscripciones = session.query(Inscripcion).count()
+        
+        print(f"📊 Usuarios: {usuarios}")
+        print(f"📚 Materias: {materias}")
+        print(f"🎓 Estudiantes: {estudiantes}")
+        print(f"👨‍🏫 Profesores: {profesores}")
+        print(f"📋 Secciones: {secciones}")
+        print(f"📝 Inscripciones: {inscripciones}")
+        
+        if usuarios > 0:
+            print("\n✅ La base de datos tiene datos. Todo funciona correctamente.")
+            print("\n📋 Ejemplo de usuario:")
+            usuario = session.query(Usuario).first()
+            print(f"   ID: {usuario.id}")
+            print(f"   Nombre: {usuario.nombre} {usuario.apellido_paterno}")
+            print(f"   Email: {usuario.email}")
+        else:
+            print("\n⚠️ La base de datos no tiene datos. ¿Tu compañera insertó los registros?")
+            
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        print("Posiblemente las tablas no coinciden. Revisa los nombres.")
+    finally:
+        session.close()
 
 
 
