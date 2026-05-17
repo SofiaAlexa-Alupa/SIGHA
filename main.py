@@ -1,4 +1,4 @@
-#Librerias utilizadas
+# Librerias utilizadas
 import flet as ft
 
 # Interfaz gráfica
@@ -11,12 +11,13 @@ from maestro import Maestro
 from materia import Materia
 from nombre import Nombre
 
-#  IMPORTAR BASE DE DATOS 
-from database import SessionLocal, Estudiante, Profesor, Materia
+# IMPORTAR BASE DE DATOS
+from database import SessionLocal, Estudiante, Profesor, MateriaDB
 
-#  FUNCIONES PARA CONVERTIR DE BD A OBJETOS
+#  FUNCIONES DE CONVERSIÓN 
+
 def crear_alumno_desde_bd(estudiante_id):
-    """Convierte un registro de BD a objeto Alumno (el que usa la interfaz)"""
+    """Convierte un registro de BD a objeto Alumno"""
     session = SessionLocal()
     try:
         estudiante_db = session.query(Estudiante).filter(Estudiante.usuario_id == estudiante_id).first()
@@ -25,14 +26,12 @@ def crear_alumno_desde_bd(estudiante_id):
         
         usuario_db = estudiante_db.usuario
         
-        # Crear objeto Nombre
         nombre_obj = Nombre(
             usuario_db.nombre,
             usuario_db.apellido_materno,
             usuario_db.apellido_paterno
         )
         
-        # Crear objeto Alumno
         alumno = Alumno(
             matricula=estudiante_db.matricula,
             carrera=estudiante_db.carrera,
@@ -41,7 +40,6 @@ def crear_alumno_desde_bd(estudiante_id):
             promedio_general=estudiante_db.promedio_general or 0
         )
         
-        # Asignar atributos heredados
         alumno.identificacion = usuario_db.identificacion
         alumno.nombre = nombre_obj
         alumno.correo = usuario_db.email
@@ -54,17 +52,17 @@ def crear_alumno_desde_bd(estudiante_id):
     finally:
         session.close()
 
+
 def obtener_materias_desde_bd():
     """Obtiene todas las materias de la BD y las convierte a objetos Materia"""
     from hora import Hora
     
     session = SessionLocal()
     try:
-        materias_db = session.query(Materia).all()
+        materias_db = session.query(MateriaDB).all()
         materias = []
         
         for m in materias_db:
-            # Crear objeto Materia con TODOS los parámetros que espera
             materia = Materia(
                 identificacion=str(m.id),
                 codigo=m.codigo,
@@ -93,6 +91,7 @@ def obtener_materias_desde_bd():
     finally:
         session.close()
 
+
 def obtener_alumnos_desde_bd():
     """Obtiene todos los alumnos de la BD"""
     session = SessionLocal()
@@ -110,11 +109,11 @@ def obtener_alumnos_desde_bd():
     finally:
         session.close()
 
+
 def obtener_maestros_desde_bd():
     """Obtiene todos los maestros de la BD"""
     session = SessionLocal()
     try:
-        
         profesores_db = session.query(Profesor).all()
         maestros = []
         
@@ -140,7 +139,7 @@ def obtener_maestros_desde_bd():
         session.close()
 
 
-# FUNCIÓN PRINCIPAL
+# FUNCIÓN PRINCIPAL 
 
 def main(pagina: ft.Page):
     pagina.title = "SIGHA"
@@ -151,14 +150,12 @@ def main(pagina: ft.Page):
 
     print("🔄 Cargando datos desde la base de datos...")
     
-    # Cargar datos desde la BD
     db_materias = obtener_materias_desde_bd()
     db_alumnos = obtener_alumnos_desde_bd()
     db_maestros = obtener_maestros_desde_bd()
     
-    # Seleccionar el primer alumno para probar (después se integrará con el login)
     if db_alumnos:
-        usuario = db_alumnos[0]  # Primer alumno de la BD
+        usuario = db_alumnos[0]
         print(f"👤 Usuario cargado: {usuario.nombre} (Alumno)")
         interfaz.interfaz_alumno(pagina, usuario, db_materias)
     elif db_maestros:
@@ -169,5 +166,5 @@ def main(pagina: ft.Page):
         print("❌ No hay usuarios en la BD")
         pagina.add(ft.Text("No hay datos en la base de datos", color="red"))
 
-ft.app(main)
 
+ft.app(main)
