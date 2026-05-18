@@ -5,7 +5,7 @@ import flet as ft
 import interfaz_grafica as interfaz
 
 # Importar clases del proyecto
-from administrador import Administrador
+from administrador import Administrador as Administrador_logico
 from alumno import Alumno
 from maestro import Maestro
 from materia import Materia
@@ -156,7 +156,7 @@ def obtener_administradores_desde_bd():
                 usuario_db.apellido_paterno
             )
             
-            admin = Administrador()
+            admin = Administrador_logico()
             admin.identificacion = usuario_db.identificacion
             admin.nombre = nombre_obj
             admin.correo = usuario_db.email
@@ -180,6 +180,7 @@ def main(pagina: ft.Page):
     pagina.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     pagina.padding = 5
     pagina.bgcolor = "#0f172a"
+    pagina.window_prevent_close = True
 
     print("🔄 Cargando datos desde la base de datos...")
     
@@ -188,7 +189,8 @@ def main(pagina: ft.Page):
     db_alumnos = obtener_alumnos_desde_bd()
     db_maestros = obtener_maestros_desde_bd()
     db_administradores = obtener_administradores_desde_bd()
-    
+
+
     interfaz.login(pagina=pagina,
                    alumnos=db_alumnos,
                    maestros=db_maestros,

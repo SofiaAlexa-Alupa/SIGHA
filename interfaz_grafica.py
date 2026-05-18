@@ -136,24 +136,23 @@ def login(pagina: ft.Page,
         for alumno in alumnos:
             if alumno.obtenerIdentificacion() == codigo_usuario.value and alumno.obtenerContraseña() == contraseña_usuario.value:
                 interfaz_alumno(pagina=pagina, usuario = alumno, db_materias = materias)
+                return
 
         for maestro in maestros:
             if maestro.obtenerIdentificacion() == codigo_usuario.value and maestro.obtenerContraseña() == contraseña_usuario.value:
                 interfaz_maestro_nueva(pagina=pagina, usuario = maestro)
+                return
 
         for administrador in administradores:
-            if administrador.obtenerIdentificacion() == codigo_usuario.value and administrador.obtenerContraseña() == contraseña_usuario.value:
-                interfaz_administrador(pagina=pagina, usuario=administrador, db_materias= materias, db_alumnos= alumnos, db_maestros=maestros)
+            if administrador.identificacion == codigo_usuario.value and administrador.contraseña == contraseña_usuario.value:
+                interfaz_administrador(pagina=pagina, usuario = administrador, db_materias= materias, db_alumnos= alumnos, db_maestros= maestros)
+                return
 
 
         pagina.update()
 
 def interfaz_maestro_nueva(pagina: ft.Page, usuario: Maestro):
 
-    pagina.vertical_alignment = ft.MainAxisAlignment.START
-    pagina.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
-    pagina.scroll = None
-    pagina.window_prevent_close = True
 
     cabezera = ft.Container(
         content = ft.Row(
@@ -253,21 +252,25 @@ def interfaz_maestro_nueva(pagina: ft.Page, usuario: Maestro):
 
         ]
     )
-    pagina.navigation_bar = barra_navegacion
-    pagina.add(vistas_manager)
+
+    vista = ft.View(
+        controls = [
+            vistas_manager,
+        ],
+        navigation_bar = barra_navegacion,
+        vertical_alignment=ft.MainAxisAlignment.START,
+        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+        scroll = None
+    )
+
+    pagina.views.append(vista)
+    pagina.update()
+
+
+
 
 def seccion_1_maestro(pagina: ft.Page, usuario:Maestro):
     materia_actual, materia_siguiente = filtrar_materia_hoy(usuario)
-
-    materia_actual= Materia()
-    materia_siguiente = Materia()
-
-    alumno = Alumno()
-
-    for i in range(0, 100):
-        materia_actual.agregar_alumno(alumno)
-    boton_materia_actual = None
-    boton_materia_siguiente = None
 
     header = ft.Text("Seccion 1: Mis alertas clase",
                      color = PURPLE,
@@ -723,7 +726,7 @@ def seccion_2_Disponibilidad(pagina: ft.Page, usuario:Maestro):
                                   color = PURPLE_MIDNIGHT,
                             ),
                           ft.Text("Gestion de disponibilidad",
-                                  size = 36,
+                                  size = 24,
                                   weight = ft.FontWeight.BOLD)
 
                       ],
