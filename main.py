@@ -1,4 +1,4 @@
-# Librerias utilizadas
+#Librerias utilizadas
 import flet as ft
 
 # Interfaz gráfica
@@ -12,7 +12,7 @@ from materia import Materia
 from nombre import Nombre
 
 # IMPORTAR BASE DE DATOS
-from database import SessionLocal, Estudiante, Profesor, MateriaDB
+from database import SessionLocal, Estudiante, Profesor, Administrador, MateriaDB
 
 #  FUNCIONES DE CONVERSIÓN 
 
@@ -46,9 +46,11 @@ def crear_alumno_desde_bd(estudiante_id):
         alumno.contraseña = usuario_db.password
         alumno.rol = usuario_db.rol
         alumno.estado = usuario_db.estado
-        alumno.fecha_creacion = usuario_db.fecha_creacion
         
         return alumno
+    except Exception as e:
+        print(f"Error al crear alumno: {e}")
+        return None
     finally:
         session.close()
 
@@ -139,6 +141,37 @@ def obtener_maestros_desde_bd():
         session.close()
 
 
+def obtener_administradores_desde_bd():
+    """Obtiene todos los administradores de la BD"""
+    session = SessionLocal()
+    try:
+        admins_db = session.query(Administrador).all()
+        administradores = []
+        
+        for a in admins_db:
+            usuario_db = a.usuario
+            nombre_obj = Nombre(
+                usuario_db.nombre,
+                usuario_db.apellido_materno,
+                usuario_db.apellido_paterno
+            )
+            
+            admin = Administrador()
+            admin.identificacion = usuario_db.identificacion
+            admin.nombre = nombre_obj
+            admin.correo = usuario_db.email
+            admin.contraseña = usuario_db.password
+            admin.rol = usuario_db.rol
+            admin.estado = usuario_db.estado
+            
+            administradores.append(admin)
+        
+        print(f"✅ Cargados {len(administradores)} administradores desde la BD")
+        return administradores
+    finally:
+        session.close()
+
+
 # FUNCIÓN PRINCIPAL 
 
 def main(pagina: ft.Page):
@@ -148,12 +181,15 @@ def main(pagina: ft.Page):
     pagina.padding = 5
     pagina.bgcolor = "#0f172a"
 
-    print(" Cargando datos desde la base de datos...")
+    print("🔄 Cargando datos desde la base de datos...")
     
+    # Cargar datos desde la BD
     db_materias = obtener_materias_desde_bd()
     db_alumnos = obtener_alumnos_desde_bd()
     db_maestros = obtener_maestros_desde_bd()
+    db_administradores = obtener_administradores_desde_bd()
     
+    # Seleccionar el primer usuario disponible (para pruebas)
     if db_alumnos:
         usuario = db_alumnos[0]
         print(f" Usuario cargado: {usuario.nombre} (Alumno)")
@@ -162,6 +198,10 @@ def main(pagina: ft.Page):
         usuario = db_maestros[0]
         print(f" Usuario cargado: {usuario.nombre} (Maestro)")
         interfaz.interfaz_maestro(pagina, usuario)
+    elif db_administradores:
+        usuario = db_administradores[0]
+        print(f" Usuario cargado: {usuario.nombre} (Administrador)")
+        interfaz.interfaz_administrador(pagina, usuario, db_materias, db_alumnos, db_maestros)
     else:
         print(" No hay usuarios en la BD")
         pagina.add(ft.Text("No hay datos en la base de datos", color="red"))
