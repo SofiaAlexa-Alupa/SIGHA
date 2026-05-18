@@ -189,22 +189,11 @@ def main(pagina: ft.Page):
     db_maestros = obtener_maestros_desde_bd()
     db_administradores = obtener_administradores_desde_bd()
     
-    # Seleccionar el primer usuario disponible (para pruebas)
-    if db_alumnos:
-        usuario = db_alumnos[0]
-        print(f" Usuario cargado: {usuario.nombre} (Alumno)")
-        interfaz.interfaz_alumno(pagina, usuario, db_materias)
-    elif db_maestros:
-        usuario = db_maestros[0]
-        print(f" Usuario cargado: {usuario.nombre} (Maestro)")
-        interfaz.interfaz_maestro(pagina, usuario)
-    elif db_administradores:
-        usuario = db_administradores[0]
-        print(f" Usuario cargado: {usuario.nombre} (Administrador)")
-        interfaz.interfaz_administrador(pagina, usuario, db_materias, db_alumnos, db_maestros)
-    else:
-        print(" No hay usuarios en la BD")
-        pagina.add(ft.Text("No hay datos en la base de datos", color="red"))
+    interfaz.login(pagina=pagina,
+                   alumnos=db_alumnos,
+                   maestros=db_maestros,
+                   administradores=db_administradores,
+                   materias = db_materias)
 
 
 ft.app(main)

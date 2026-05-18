@@ -14,6 +14,8 @@ from fpdf import FPDF
 import platform
 import os
 
+from usuario import Usuario
+
 BG      = "#0f172a"   # Fondo oscuro principal
 CARD    = "#1e293b"   # Fondo de las tarjetas
 PURPLE  = "#7c3aed"   # Morado para acentos
@@ -28,7 +30,11 @@ SECONDARY = "#f472b6"
 
 
 
-def login(pagina: ft.Page):
+def login(pagina: ft.Page,
+          alumnos:list[Alumno],
+          maestros:list[Maestro],
+          administradores:list[Administrador],
+          materias:list[Materia]):
      pagina.bg = BG
      pagina.title = "Inicio de sesion"
      pagina.padding = 0
@@ -109,8 +115,35 @@ def login(pagina: ft.Page):
             campos_validos = False
 
         if campos_validos:
-            pass
-            #Aqui se integra la base de datos
+            decicion()
+        else:
+            snackbar = ft.SnackBar(
+                content = ft.Container(
+                    content = ft.Text(
+                        "Usuario o contraseña incorrectos",
+                        color = ft.Colors.RED_200
+                    ),
+                    alignment = ft.Alignment.CENTER,
+                ),
+                duration = 1500,
+                bgcolor = CARD,
+                visible = True,
+            )
+            pagina.show_dialog(snackbar)
+
+
+     def decicion():
+        for alumno in alumnos:
+            if alumno.obtenerIdentificacion() == codigo_usuario.value and alumno.obtenerContraseña() == contraseña_usuario.value:
+                interfaz_alumno(pagina=pagina, usuario = alumno, db_materias = materias)
+
+        for maestro in maestros:
+            if maestro.obtenerIdentificacion() == codigo_usuario.value and maestro.obtenerContraseña() == contraseña_usuario.value:
+                interfaz_maestro_nueva(pagina=pagina, usuario = maestro)
+
+        for administrador in administradores:
+            if administrador.obtenerIdentificacion() == codigo_usuario.value and administrador.obtenerContraseña() == contraseña_usuario.value:
+                interfaz_administrador(pagina=pagina, usuario=administrador, db_materias= materias, db_alumnos= alumnos, db_maestros=maestros)
 
 
         pagina.update()
@@ -2183,7 +2216,7 @@ def interfaz_alumno(pagina: ft.Page, usuario: Alumno, db_materias: list[Materia]
                 bgcolor=color,
                 border_radius=10,
 
-                border=ft.border.all(
+                border=ft.Border.all(
                     1,
                     "#334155"
                 ),
